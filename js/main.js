@@ -1,6 +1,6 @@
 function getParameterByName(name) {
   name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+  var regex   = new RegExp("[\\?&]" + name + "=([^&#]*)"),
       results = regex.exec(location.search);
   return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
@@ -27,63 +27,59 @@ function checkDates(d1, d2) {
   return !(isInvalidDate(d1) || isInvalidDate(d2) || d1 >= d2);
 }
 
-function fillTimers(ratio, str) {
-  document.getElementById("progressValue").innerHTML = (Math.round(100 * ratio * 100) / 100) + '&nbsp;%';
-  document.getElementById('progressBar').setAttribute("style","width: " + (100 * ratio) + "%");
-  document.getElementById('progressBar').setAttribute("aria-valuenow", 100 * ratio);
+function prettyPrintDelta(delta) {
+  var days    = Math.floor(delta / 86400),
+      hours   = Math.floor(delta / 3600) % 24,
+      minutes = Math.floor(delta / 60) % 60,
+      seconds = delta % 60;
 
-  document.getElementById("eta").innerHTML = str;
+  var output = "";
+  if(delta >= 86400) output += days    + " day"    + (days != 1 ? 's' : '')    + ', ';
+  if(delta >= 3600)  output += hours   + " hour"   + (hours != 1 ? 's' : '')   + ', ';
+  if(delta >= 60)    output += minutes + " minute" + (minutes != 1 ? 's' : '') + ' and ';
+                     output += seconds + " second" + (seconds != 1 ? 's' : '');
+  return output;
+}
+
+function fillTimers(ratio, str) {
+  var progress = document.getElementById("progress"),
+      progressBar = document.getElementById("progressBar"),
+      eta         = document.getElementById("eta");
+
+  document.getElementById("progressValue").innerHTML = (Math.floor(100 * ratio * 100) / 100) + '&nbsp;%';
+  progressBar.setAttribute("style","width: " + (100 * ratio) + "%");
+  progressBar.setAttribute("aria-valuenow", 100 * ratio);
+
+  eta.innerHTML = str;
 
   if(ratio == 1.0) {
-    document.getElementById("progress").className = document.getElementById("progress").className.replace(/\bactive\b/,'');
-    document.getElementById("progressBar").className = document.getElementById("progressBar").className.replace(/\b progress-bar-[a-z]*\b/,'');
-    document.getElementById("progressBar").className += " progress-bar-success";
+    progress.className    = progress.className.replace(/\bactive\b/,'');
+    progressBar.className = progressBar.className.replace(/\b progress-bar-[a-z]*\b/,'');
+    progressBar.className += " progress-bar-success";
 
-    document.getElementById("eta").className = document.getElementById("eta").className.replace(/\b alert-[a-z]*\b/,'');
-    document.getElementById("eta").className += " alert-success";
+    eta.className = eta.className.replace(/\b alert-[a-z]*\b/,'');
+    eta.className += " alert-success";
   }
 
 }
 
 function playTimers() {
   function loop() {
-    var currentTime = new Date();
+    var currentTime = new Date(),
+        delta = Math.round(Math.abs(nextTime - currentTime) / 1000);
 
-    var str,
-        ratio;
-
-    var delta,
-        days,
-        hours,
-        minutes,
-        seconds;
-
-    if(nextTime < currentTime) {
-      str = "Time is up!";
-      ratio = 1.0;
-    }
-    else {
-      delta   = Math.round((nextTime - currentTime) / 1000);
-      days    = Math.floor(delta / 86400);
-      hours   = Math.floor(delta / 3600) % 24;
-      minutes = Math.floor(delta / 60) % 60;
-      seconds = delta % 60;
-
-      str = "";
-      if(delta >= 86400) str += days + " day" + (days != 1 ? 's' : '') + ', ';
-      if(delta >= 3600)  str += hours + " hour" + (hours != 1 ? 's' : '') + ', ';
-      if(delta >= 60)    str += minutes + " minute" + (minutes != 1 ? 's' : '') + ' and ';
-      str += seconds + " second" + (seconds != 1 ? 's' : '') + ' remaining.';
-
-      ratio = (currentTime - lastTime) / (nextTime - lastTime);
-    }
-
-    fillTimers(ratio, str);
+    if(nextTime < currentTime)
+      fillTimers(1.0, "It already happened " + prettyPrintDelta(delta) + " ago!");
+    else
+      fillTimers((currentTime - lastTime) / (nextTime - lastTime),
+                 prettyPrintDelta(delta) + " remaining..."
+      );
   }
 
   loop();
   window.setInterval(loop, 1000);
 }
+
 
 var lt = getParameterByName('lt');
 var nt = getParameterByName('nt');
