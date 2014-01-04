@@ -1,0 +1,16 @@
+.progress {
+  position: relative;
+}
+
+#progressValue {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+}
+
+h1 {
+  font-family: 'Alex Brush', Arial, sans-serif;
+  font-size: 60px;
+}
