@@ -28,16 +28,18 @@ function checkDates(d1, d2) {
 }
 
 function prettyPrintDelta(delta) {
-  var days    = Math.floor(delta / 86400),
+  var weeks   = Math.floor(delta / 604800),
+      days    = Math.floor(delta / 86400) % 7,
       hours   = Math.floor(delta / 3600) % 24,
       minutes = Math.floor(delta / 60) % 60,
       seconds = delta % 60;
 
   var output = "";
-  if(delta >= 86400) output += days    + " day"    + (days != 1 ? 's' : '')    + ', ';
-  if(delta >= 3600)  output += hours   + " hour"   + (hours != 1 ? 's' : '')   + ', ';
-  if(delta >= 60)    output += minutes + " minute" + (minutes != 1 ? 's' : '') + ' and ';
-                     output += seconds + " second" + (seconds != 1 ? 's' : '');
+  if(delta >= 604800) output += weeks   + " week"   + (weeks != 1 ? 's' : '')   + ', ';
+  if(delta >= 86400)  output += days    + " day"    + (days != 1 ? 's' : '')    + ', ';
+  if(delta >= 3600)   output += hours   + " hour"   + (hours != 1 ? 's' : '')   + ', ';
+  if(delta >= 60)     output += minutes + " minute" + (minutes != 1 ? 's' : '') + ' and ';
+                      output += seconds + " second" + (seconds != 1 ? 's' : '');
   return output;
 }
 
@@ -79,7 +81,6 @@ function playTimers() {
   loop();
   window.setInterval(loop, 1000);
 }
-
 
 var lt = getParameterByName('lt');
 var nt = getParameterByName('nt');
