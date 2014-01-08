@@ -19,10 +19,6 @@ function isInvalidDate(d) {
   return isNaN(d);
 }
 
-function isTooEarly(d) {
-  return d < new Date();
-}
-
 function checkDates(d1, d2) {
   return !(isInvalidDate(d1) || isInvalidDate(d2) || d1 >= d2);
 }
@@ -44,38 +40,49 @@ function prettyPrintDelta(delta) {
 }
 
 function fillTimers(ratio, str) {
-  var progress = document.getElementById("progress"),
-      progressBar = document.getElementById("progressBar"),
-      eta         = document.getElementById("eta");
-
-  document.getElementById("progressValue").innerHTML = (Math.floor(100 * ratio * 100) / 100) + '&nbsp;%';
-  progressBar.setAttribute("style","width: " + (100 * ratio) + "%");
-  progressBar.setAttribute("aria-valuenow", 100 * ratio);
+  var eta = document.getElementById("eta");
 
   eta.innerHTML = str;
+  eta.className = eta.className.replace(/\b alert-[a-z]*\b/,'');
 
-  if(ratio == 1.0) {
+  if(ratio < 0.0)
+    eta.className += " alert-warning";
+  else if(ratio >= 1.0)
+    eta.className += " alert-success";
+  else
+    eta.className += " alert-info";
+}
+
+function computeProgressBar(ratio) {
+  ratio = Math.min(Math.max(0.0, ratio), 1.0);
+
+  var progress    = document.getElementById("progress"),
+      progressBar = document.getElementById("progressBar");
+
+  document.getElementById("progressValue").innerHTML = (Math.round(100 * ratio * 100) / 100) + ' %';
+  progressBar.setAttribute("style", "width: " + (100 * ratio) + "%");
+  progressBar.setAttribute("aria-valuenow", 100 * ratio);
+
+  if(ratio === 1.0) {
     progress.className    = progress.className.replace(/\bactive\b/,'');
     progressBar.className = progressBar.className.replace(/\b progress-bar-[a-z]*\b/,'');
     progressBar.className += " progress-bar-success";
-
-    eta.className = eta.className.replace(/\b alert-[a-z]*\b/,'');
-    eta.className += " alert-success";
   }
-
 }
 
 function playTimers() {
   function loop() {
     var currentTime = new Date(),
-        delta = Math.round(Math.abs(nextTime - currentTime) / 1000);
+        ratio = (currentTime - lastTime) / (nextTime - lastTime);
 
-    if(nextTime < currentTime)
-      fillTimers(1.0, "It already happened " + prettyPrintDelta(delta) + " ago!");
+    computeProgressBar(ratio);
+
+    if(currentTime < lastTime)
+      fillTimers(ratio, "It will happen in " + prettyPrintDelta(Math.round((lastTime - currentTime) / 1000)) + "...");
+    else if(nextTime < currentTime)
+      fillTimers(ratio, "It already happened " + prettyPrintDelta(Math.round((currentTime - nextTime) / 1000)) + " ago!");
     else
-      fillTimers((currentTime - lastTime) / (nextTime - lastTime),
-                 prettyPrintDelta(delta) + " remaining..."
-      );
+      fillTimers(ratio, prettyPrintDelta(Math.round((nextTime - currentTime) / 1000)) + " remaining...");
   }
 
   loop();
@@ -109,8 +116,6 @@ else {
       setError("Next date is invalid.");
     else if(nextTime <= lastTime)
       setError("Last date should be prior to next date.");
-    else if(isTooEarly(lastTime))
-      setError("Last date should be in the past.")
   }
   else
     playTimers();
