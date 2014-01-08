@@ -106,16 +106,29 @@ else {
   nextTime = new Date(nt);
 
   if(!checkDates(lastTime, nextTime)) {
+    var lastTimeFormGroup = document.getElementById('lastTimeFormGroup');
+    var nextTimeFormGroup = document.getElementById('nextTimeFormGroup');
+
     hideTimers();
 
-    if(isInvalidDate(lastTime) && isInvalidDate(nextTime))
+    if(isInvalidDate(lastTime) && isInvalidDate(nextTime)) {
+      lastTimeFormGroup.className += " has-error";
+      nextTimeFormGroup.className += " has-error";
       setError("Both dates are invalid.");
-    else if(isInvalidDate(lastTime))
+    }
+    else if(isInvalidDate(lastTime)) {
+      lastTimeFormGroup.className += " has-error";
       setError("Last date is invalid.");
-    else if(isInvalidDate(nextTime))
+    }
+    else if(isInvalidDate(nextTime)) {
+      nextTimeFormGroup.className += " has-error";
       setError("Next date is invalid.");
-    else if(nextTime <= lastTime)
+    }
+    else if(nextTime <= lastTime) {
+      lastTimeFormGroup.className += " has-error";
+      nextTimeFormGroup.className += " has-error";
       setError("Last date should be prior to next date.");
+    }
   }
   else
     playTimers();
