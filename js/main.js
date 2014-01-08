@@ -1,8 +1,8 @@
 function getParameterByName(name) {
-  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex   = new RegExp("[\\?&]" + name + "=([^&#]*)"),
       results = regex.exec(location.search);
-  return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 function hideTimers() {
@@ -95,7 +95,7 @@ var nt = getParameterByName('nt');
 var lastTime,
     nextTime;
 
-if(lt == "" && nt == "") {
+if(lt === "" && nt === "") {
   hideTimers();
 }
 else {
