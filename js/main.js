@@ -73,13 +73,13 @@ function computeProgressBar(ratio) {
 function playTimers() {
   function loop() {
     var currentTime = new Date(),
-        ratio = (currentTime - lastTime) / (nextTime - lastTime);
+        ratio = Math.round((currentTime - lastTime) / 1000) * 1000 / (nextTime - lastTime);
 
     computeProgressBar(ratio);
 
-    if(currentTime < lastTime)
+    if(ratio < 0.0)
       fillTimers(ratio, "It will happen in " + prettyPrintDelta(Math.round((lastTime - currentTime) / 1000)) + "...");
-    else if(nextTime < currentTime)
+    else if(ratio >= 1.0)
       fillTimers(ratio, "It already happened " + prettyPrintDelta(Math.round((currentTime - nextTime) / 1000)) + " ago!");
     else
       fillTimers(ratio, prettyPrintDelta(Math.round((nextTime - currentTime) / 1000)) + " remaining...");
