@@ -1,27 +1,32 @@
-function getParameterByName(name) {
-  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  var regex   = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-      results = regex.exec(location.search);
-  return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+var uriParameters = function () {
+  var params = {},
+      vars = window.location.search.substring(1).split("&");
+
+  for (var i = 0; i < vars.length; ++i) {
+    var pair = vars[i].split("="),
+        key = decodeURIComponent(pair[0]),
+        val = decodeURIComponent(pair[1]);
+
+    if (typeof params[key] === "undefined")
+      params[key] = [val];
+    else
+      params[key].push(val);
+  }
+    return params;
+} ();
 
 function hideTimers() {
   document.getElementById('timers').className += " hidden";
 }
 
-function setError(error) {
+function displayErrors(error) {
   var errorDiv = document.getElementById('error');
   errorDiv.className = errorDiv.className.replace(/\bhidden\b/,'');
-  errorDiv.innerHTML = error;
+  errorDiv.innerHTML =  "<ul>" + errors.map(function(el) {
+    return "<li>" + el + "</li>";
+  }).join("") + "</ul>";
 }
 
-function isInvalidDate(d) {
-  return isNaN(d);
-}
-
-function checkDates(d1, d2) {
-  return !(isInvalidDate(d1) || isInvalidDate(d2) || d1 >= d2);
-}
 
 function prettyPrintDelta(delta) {
   var weeks   = Math.floor(delta / 604800),
@@ -73,63 +78,94 @@ function computeProgressBar(ratio) {
 function playTimers() {
   function loop() {
     var currentTime = new Date(),
-        ratio = Math.round((currentTime - lastTime) / 1000) * 1000 / (nextTime - lastTime);
+        ratio = Math.round((currentTime - dateEvents[0]) / 1000) * 1000 / (dateEvents[1] - dateEvents[0]);
 
     computeProgressBar(ratio);
 
     if(ratio < 0.0)
-      fillTimers(ratio, "It will happen in " + prettyPrintDelta(Math.round((lastTime - currentTime) / 1000)) + "...");
+      fillTimers(ratio, "It will happen in " + prettyPrintDelta(Math.round((dateEvents[0] - currentTime) / 1000)) + "...");
     else if(ratio >= 1.0)
-      fillTimers(ratio, "It already happened " + prettyPrintDelta(Math.round((currentTime - nextTime) / 1000)) + " ago!");
+      fillTimers(ratio, "It already happened " + prettyPrintDelta(Math.round((currentTime - dateEvents[1]) / 1000)) + " ago!");
     else
-      fillTimers(ratio, prettyPrintDelta(Math.round((nextTime - currentTime) / 1000)) + " remaining...");
+      fillTimers(ratio, prettyPrintDelta(Math.round((dateEvents[1] - currentTime) / 1000)) + " remaining...");
   }
 
   loop();
   window.setInterval(loop, 1000);
 }
 
-var lt = getParameterByName('lt');
-var nt = getParameterByName('nt');
-
-var lastTime,
-    nextTime;
-
-if(lt === "" && nt === "") {
-  hideTimers();
+function render(template, data) {
+  for (var key in data)
+    template = template.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
+  return template;
 }
-else {
-  document.getElementById('lastTime').value = lt;
-  document.getElementById('nextTime').value = nt;
 
-  lastTime = new Date(lt);
-  nextTime = new Date(nt);
+function stringToElement(str) {
+  var div = document.createElement('div');
+  div.innerHTML = str;
+  return div.firstElementChild;
+}
 
-  if(!checkDates(lastTime, nextTime)) {
-    var lastTimeFormGroup = document.getElementById('lastTimeFormGroup');
-    var nextTimeFormGroup = document.getElementById('nextTimeFormGroup');
+var events = uriParameters['e'];
+var dateEvents = [];
+var id = -1;
+var errors = [];
 
-    hideTimers();
+if(events === undefined || events.length < 2) {
+  newEvent(++id, 1);
+  newEvent(++id, 2);
+  events = [];
+}
+else
+  for (var i = 0; i < uriParameters['e'].length; i++)
+    newEvent(++id, i + 1, uriParameters['e'][i]);
 
-    if(isInvalidDate(lastTime) && isInvalidDate(nextTime)) {
-      lastTimeFormGroup.className += " has-error";
-      nextTimeFormGroup.className += " has-error";
-      setError("Both dates are invalid.");
-    }
-    else if(isInvalidDate(lastTime)) {
-      lastTimeFormGroup.className += " has-error";
-      setError("Last date is invalid.");
-    }
-    else if(isInvalidDate(nextTime)) {
-      nextTimeFormGroup.className += " has-error";
-      setError("Next date is invalid.");
-    }
-    else if(nextTime <= lastTime) {
-      lastTimeFormGroup.className += " has-error";
-      nextTimeFormGroup.className += " has-error";
-      setError("Last date should be prior to next date.");
-    }
+for (var i = 0; i < events.length; i++) {
+  dateEvents.push(new Date(events[i]));
+}
+
+
+for (var i = 0; i < dateEvents.length; i++) {
+  if (isNaN(dateEvents[i])) {
+    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").className += " has-error";
+    errors.push("Date " + (i + 1) + " is invalid.");
   }
-  else
-    playTimers();
 }
+
+for (var i = 0; i < dateEvents.length - 1; i++) {
+  if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] > dateEvents[i + 1]) {
+    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").className += " has-error";
+    document.querySelector(".form-group:nth-child(" + (i + 2) + ")").className += " has-error";
+    errors.push("Event " + (i + 1) + " cannot happen after event " + (i + 2) + ".");
+  }
+}
+
+if(events.length >= 2 && errors.length === 0)
+  playTimers();
+else {
+  hideTimers();
+  if(events.length >= 2)
+    displayErrors();
+}
+
+function newEvent(id, index, value) {
+  value = typeof value === "undefined" ? "" : value;
+
+  var clone = stringToElement(render(document.querySelector("#templateInput").innerHTML, {
+    id: id,
+    index: index,
+    value: value //new Date().toUTCString()
+  }));
+
+  clone.querySelector(".close").addEventListener("click", function(evt) {
+    this.parentNode.parentNode.removeChild(this.parentNode);
+    evt.preventDefault();
+  });
+
+  document.querySelector("#form").insertBefore(clone, document.querySelector("#add"));
+}
+
+document.querySelector("#addEvent").addEventListener("click", function(e) {
+  newEvent(++id, document.querySelectorAll(".form-horizontal .form-group").length - 2 + 1);
+  e.preventDefault();
+});

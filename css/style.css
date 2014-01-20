@@ -14,3 +14,57 @@ h1 {
   font-family: 'Alex Brush', Arial, sans-serif;
   font-size: 60px;
 }
+
+.circle {
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    padding: 2px !important;
+    margin-right: 15px;
+    position: relative;
+    top: 4px;
+    color: #555;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    text-align: center !important;
+    font-weight: normal;
+    float: left;
+}
+
+.has-error .circle {
+    border: 1px solid #ebccd1;
+    background-color: #f2dede;
+}
+
+.form-fixed-width {
+  max-width: 400px;
+  margin: auto;
+}
+
+.form-fixed-width .form-group {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.form-fixed-width .form-control,
+.form-fixed-width .btn {
+  width: calc(100% - 2 * 41px);
+  float: left;
+}
+
+.form-fixed-width .delete-event {
+  float: left;
+  width: 34px;
+  height: 34px;
+}
+
+.form-fixed-width .btn {
+  margin-left: 41px;
+}
+
+.form-fixed-width .add-event {
+  margin-top: -5px;
+  margin-bottom: 10px;
+  margin-right: 41px;
+}

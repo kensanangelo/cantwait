@@ -23,26 +23,26 @@
 
       <hr>
 
+      <script type="text/template" id="templateInput">
+        <div class="form-group">
+          <label for="{{id}}" class="control-label circle">{{index}}</label>
+          <input type="datetime" class="form-control" id="{{id}}" name="e" value="{{value}}" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">
+          <button type="button" class="close delete-event" aria-hidden="true">&times;</button>
+        </div>
+      </script>
+
       <div id="error" class="alert alert-danger text-center hidden"></div>
 
-      <form class="form-horizontal" role="form" method="get">
-        <div class="form-group" id="lastTimeFormGroup">
-          <label for="lastTime" class="col-sm-5 control-label">Last time was:</label>
-          <div class="col-sm-3">
-            <input type="datetime" class="form-control" id="lastTime" name="lt" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">
-          </div>
+      <form class="form-horizontal form-fixed-width" id="form" role="form" method="get">
+
+        <div class="form-group text-right add-event" id="add">
+          <a href="#" id="addEvent">&#10010; Add event</a>
         </div>
-        <div class="form-group" id="nextTimeFormGroup">
-          <label for="nextTime" class="col-sm-5 control-label">Next time will be:</label>
-          <div class="col-sm-3">
-            <input type="datetime" class="form-control" id="nextTime" name="nt" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">
-          </div>
-        </div>
+
         <div class="form-group">
-          <div class="col-sm-offset-5 col-sm-3">
-            <button type="submit" class="btn btn-primary btn-block">Compute</button>
-          </div>
+          <button type="submit" class="btn btn-block btn-primary">Compute</button>
         </div>
+
       </form>
 
       <div id="timers">
