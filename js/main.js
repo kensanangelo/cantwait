@@ -16,17 +16,16 @@ var uriParameters = function () {
 } ();
 
 function hideTimers() {
-  document.getElementById('timers').className += " hidden";
+  document.getElementById('timers').classList.add("hidden");
 }
 
 function displayErrors(error) {
   var errorDiv = document.getElementById('error');
-  errorDiv.className = errorDiv.className.replace(/\bhidden\b/,'');
+  errorDiv.classList.remove("hidden");
   errorDiv.innerHTML =  "<ul>" + errors.reduce(function(previousValue, currentValue, index, array){
     return previousValue + "<li>" + currentValue + "</li>\n";
   }, "") + "</ul>";
 }
-
 
 function prettyPrintDelta(delta) {
   var weeks   = Math.floor(delta / 604800),
@@ -48,14 +47,16 @@ function fillTimers(ratio, str) {
   var eta = document.getElementById("eta");
 
   eta.innerHTML = str;
-  eta.className = eta.className.replace(/\b alert-[a-z]*\b/,'');
+  eta.classList.remove("alert-warning");
+  eta.classList.remove("alert-success");
+  eta.classList.remove("alert-info");
 
   if(ratio < 0.0)
-    eta.className += " alert-warning";
+    eta.classList.add("alert-warning");
   else if(ratio >= 1.0)
-    eta.className += " alert-success";
+    eta.classList.add("alert-success");
   else
-    eta.className += " alert-info";
+    eta.classList.add("alert-info");
 }
 
 function computeProgressBar(ratio) {
@@ -69,9 +70,8 @@ function computeProgressBar(ratio) {
   progressBar.setAttribute("aria-valuenow", 100 * ratio);
 
   if(ratio === 1.0) {
-    progress.className    = progress.className.replace(/\bactive\b/,'');
-    progressBar.className = progressBar.className.replace(/\b progress-bar-[a-z]*\b/,'');
-    progressBar.className += " progress-bar-success";
+    progress.classList.remove("active");
+    progressBar.classList.add("progress-bar-success");
   }
 }
 
@@ -132,16 +132,16 @@ for (var i = 0; i < events.length; i++) {
 
 for (var i = 0; i < dateEvents.length; i++) {
   if (isNaN(dateEvents[i])) {
-    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").className += " has-error";
+    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
     errors.push("Date " + (i + 1) + " is invalid.");
   }
 }
 
 for (var i = 0; i < dateEvents.length - 1; i++) {
-  if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] > dateEvents[i + 1]) {
-    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").className += " has-error";
-    document.querySelector(".form-group:nth-child(" + (i + 2) + ")").className += " has-error";
-    errors.push("Event " + (i + 1) + " cannot happen after event " + (i + 2) + ".");
+  if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
+    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
+    document.querySelector(".form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
+    errors.push("Event " + (i + 1) + " must happen before event " + (i + 2) + ".");
   }
 }
 
