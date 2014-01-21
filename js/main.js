@@ -66,7 +66,7 @@ function computeProgressBar(ratio) {
       progressBar = document.getElementById("progressBar");
 
   document.getElementById("progressValue").innerHTML = (Math.round(100 * ratio * 100) / 100) + ' %';
-  progressBar.setAttribute("style", "width: " + (100 * ratio) + "%");
+  progressBar.style.width = (100 * ratio) + "%";
   progressBar.setAttribute("aria-valuenow", 100 * ratio);
 
   if(ratio === 1.0) {
@@ -129,6 +129,13 @@ for (var i = 0; i < events.length; i++) {
   dateEvents.push(new Date(events[i]));
 }
 
+forEach(dateEvents, function(element, index, array) {
+  var newMarker = stringToElement(render(document.querySelector("#templateCircle").innerHTML, {
+    index: index + 1,
+    left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
+  }));
+  document.querySelector(".markers").appendChild(newMarker);
+});
 
 for (var i = 0; i < dateEvents.length; i++) {
   if (isNaN(dateEvents[i])) {
@@ -141,7 +148,7 @@ for (var i = 0; i < dateEvents.length - 1; i++) {
   if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
     document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
     document.querySelector(".form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
-    errors.push("Event " + (i + 1) + " must happen before event " + (i + 2) + ".");
+    errors.push("Event " + (i + 1) + " cannot happen after event " + (i + 2) + ".");
   }
 }
 
