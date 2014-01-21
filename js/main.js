@@ -22,9 +22,9 @@ function hideTimers() {
 function displayErrors(error) {
   var errorDiv = document.getElementById('error');
   errorDiv.className = errorDiv.className.replace(/\bhidden\b/,'');
-  errorDiv.innerHTML =  "<ul>" + errors.map(function(el) {
-    return "<li>" + el + "</li>";
-  }).join("") + "</ul>";
+  errorDiv.innerHTML =  "<ul>" + errors.reduce(function(previousValue, currentValue, index, array){
+    return previousValue + "<li>" + currentValue + "</li>\n";
+  }, "") + "</ul>";
 }
 
 
@@ -159,6 +159,11 @@ function newEvent(id, index, value) {
 
   clone.querySelector(".close").addEventListener("click", function(evt) {
     this.parentNode.parentNode.removeChild(this.parentNode);
+
+    [].forEach.call(document.querySelectorAll("#form label"), function(element, index, array) {
+      element.innerHTML = index + 1;
+    });
+
     evt.preventDefault();
   });
 
