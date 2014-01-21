@@ -120,6 +120,11 @@ else
   for (var i = 0; i < uriParameters['e'].length; i++)
     newEvent(++id, i + 1, uriParameters['e'][i]);
 
+if (document.querySelectorAll("#form .event").length <= 2)
+  forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
+    element.classList.add("hidden");
+  });
+
 for (var i = 0; i < events.length; i++) {
   dateEvents.push(new Date(events[i]));
 }
@@ -148,6 +153,10 @@ else {
     displayErrors();
 }
 
+function forEach(elements, callback) {
+  [].forEach.call(elements, callback);
+}
+
 function newEvent(id, index, value) {
   value = typeof value === "undefined" ? "" : value;
 
@@ -160,9 +169,14 @@ function newEvent(id, index, value) {
   clone.querySelector(".close").addEventListener("click", function(evt) {
     this.parentNode.parentNode.removeChild(this.parentNode);
 
-    [].forEach.call(document.querySelectorAll("#form label"), function(element, index, array) {
+    forEach(document.querySelectorAll("#form label"), function(element, index, array) {
       element.innerHTML = index + 1;
     });
+
+    if (document.querySelectorAll("#form .event").length <= 2)
+      forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
+        element.classList.add("hidden");
+      });
 
     evt.preventDefault();
   });
@@ -171,6 +185,12 @@ function newEvent(id, index, value) {
 }
 
 document.querySelector("#addEvent").addEventListener("click", function(e) {
-  newEvent(++id, document.querySelectorAll(".form-horizontal .form-group").length - 2 + 1);
+  newEvent(++id, document.querySelectorAll("#form .event").length + 1);
+
+  if (document.querySelectorAll("#form .event").length > 2)
+    forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
+      element.classList.remove("hidden");
+    });
+
   e.preventDefault();
 });
