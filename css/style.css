@@ -15,6 +15,10 @@ h1 {
   font-size: 60px;
 }
 
+#error ul {
+  list-style-position: inside;
+}
+
 .circle {
   width: 26px;
   height: 26px;
