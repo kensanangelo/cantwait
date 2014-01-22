@@ -43,20 +43,10 @@ function prettyPrintDelta(delta) {
   return output;
 }
 
-function fillTimers(ratio, str) {
-  var eta = document.getElementById("eta");
-
-  eta.innerHTML = str;
-  eta.classList.remove("alert-warning");
-  eta.classList.remove("alert-success");
-  eta.classList.remove("alert-info");
-
-  if(ratio < 0.0)
-    eta.classList.add("alert-warning");
-  else if(ratio >= 1.0)
-    eta.classList.add("alert-success");
-  else
-    eta.classList.add("alert-info");
+function displayCounters(counters) {
+  document.querySelector("#eta").innerHTML =  "<ul>" + counters.reduce(function(previousValue, currentValue){
+    return previousValue + "<li>" + currentValue + "</li>\n";
+  }, "") + "</ul>";
 }
 
 function computeProgressBar(ratio) {
@@ -77,17 +67,25 @@ function computeProgressBar(ratio) {
 
 function playTimers() {
   function loop() {
-    var currentTime = new Date(),
-        ratio = Math.round((currentTime - dateEvents[0]) / 1000) * 1000 / (dateEvents[1] - dateEvents[0]);
+    var currentTime = new Date();
 
+    var ratio = Math.round((currentTime - dateEvents[0]) / 1000) * 1000 / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
     computeProgressBar(ratio);
 
-    if(ratio < 0.0)
-      fillTimers(ratio, "It will happen in " + prettyPrintDelta(Math.round((dateEvents[0] - currentTime) / 1000)) + "...");
-    else if(ratio >= 1.0)
-      fillTimers(ratio, "It already happened " + prettyPrintDelta(Math.round((currentTime - dateEvents[1]) / 1000)) + " ago!");
-    else
-      fillTimers(ratio, prettyPrintDelta(Math.round((dateEvents[1] - currentTime) / 1000)) + " remaining...");
+    var counters = [];
+    forEach(dateEvents, function(element, index) {
+      if(currentTime >= element)
+        counters.push("Event " + (index + 1) + " happened " + prettyPrintDelta(Math.round((currentTime - element) / 1000)) + " ago.");
+      else
+        counters.push("Event " + (index + 1) + " will happen in " + prettyPrintDelta(Math.round((element - currentTime) / 1000)) + ".");
+    });
+    displayCounters(counters);
+
+    document.querySelector("#eta").classList.add(
+      ratio <  0.0 ? "alert-warning" :
+      ratio >= 1.0 ? "alert-success" :
+                     "alert-info"
+    );
   }
 
   loop();

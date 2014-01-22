@@ -15,7 +15,7 @@ h1 {
   font-size: 60px;
 }
 
-#error ul {
+#error ul, #eta ul {
   list-style-position: inside;
 }
 
