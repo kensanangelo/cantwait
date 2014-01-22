@@ -74,14 +74,18 @@ function playTimers() {
 
     var counters = [];
     forEach(dateEvents, function(element, index) {
-      if(currentTime >= element)
-        counters.push("Event " + (index + 1) + " happened " + prettyPrintDelta(Math.round((currentTime - element) / 1000)) + " ago.");
-      else
-        counters.push("Event " + (index + 1) + " will happen in " + prettyPrintDelta(Math.round((element - currentTime) / 1000)) + ".");
+      counters.push(render(document.querySelector(currentTime >= element ? "#templatePastEvent" : "#templateFutureEvent").innerHTML, {
+        index: index + 1,
+        time: prettyPrintDelta(Math.round(Math.abs(currentTime - element) / 1000))
+      }));
     });
     displayCounters(counters);
 
-    document.querySelector("#eta").classList.add(
+    var etaClassList = document.querySelector("#eta").classList;
+    etaClassList.remove("alert-warning");
+    etaClassList.remove("alert-success");
+    etaClassList.remove("alert-info");
+    etaClassList.add(
       ratio <  0.0 ? "alert-warning" :
       ratio >= 1.0 ? "alert-success" :
                      "alert-info"
@@ -138,7 +142,7 @@ forEach(dateEvents, function(element, index, array) {
 for (var i = 0; i < dateEvents.length; i++) {
   if (isNaN(dateEvents[i])) {
     document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-    errors.push("Date " + (i + 1) + " is invalid.");
+    errors.push(render(document.querySelector("#templateInvalidEvent").innerHTML, { index: i + 1}));
   }
 }
 
@@ -146,7 +150,10 @@ for (var i = 0; i < dateEvents.length - 1; i++) {
   if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
     document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
     document.querySelector(".form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
-    errors.push("Event " + (i + 1) + " cannot happen after event " + (i + 2) + ".");
+    errors.push(render(document.querySelector("#templatePredatedEvent").innerHTML, {
+      index1: i + 1,
+      index2: i + 2
+    }));
   }
 }
 

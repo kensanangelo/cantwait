@@ -32,8 +32,23 @@
       </script>
 
       <script type="text/template" id="templateCircle">
-          <span class="circle" style="left: {{left}}">{{index}}</span>
-        </div>
+        <span class="circle" style="left: {{left}}">{{index}}</span>
+      </script>
+
+      <script type="text/template" id="templateInvalidEvent">
+        <span class="circle">{{index}}</span> is invalid.
+      </script>
+
+      <script type="text/template" id="templatePredatedEvent">
+        <span class="circle">{{index1}}</span> must happen before <span class="circle">{{index2}}</span>.
+      </script>
+
+      <script type="text/template" id="templatePastEvent">
+        <span class="circle">{{index}}</span> happened {{time}} ago.
+      </script>
+
+      <script type="text/template" id="templateFutureEvent">
+        <span class="circle">{{index}}</span> will happen in {{time}}.
       </script>
 
       <div id="error" class="alert alert-danger text-center hidden"></div>
