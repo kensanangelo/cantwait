@@ -23,60 +23,27 @@
 
       <hr>
 
-      <script type="text/template" id="templateInput">
-        <div class="form-group event">
-          <label for="{{id}}" class="control-label circle">{{index}}</label>
-          <input type="datetime" class="form-control" id="{{id}}" name="e" value="{{value}}" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">
-          <button type="button" class="close delete-event" aria-hidden="true">&times;</button>
-        </div>
-      </script>
-
-      <script type="text/template" id="templateCircle">
-        <span class="circle" style="left: {{left}}">{{index}}</span>
-      </script>
-
-      <script type="text/template" id="templateInvalidEvent">
-        <span class="circle">{{index}}</span> is invalid.
-      </script>
-
-      <script type="text/template" id="templatePredatedEvent">
-        <span class="circle">{{index1}}</span> must happen before <span class="circle">{{index2}}</span>.
-      </script>
-
-      <script type="text/template" id="templatePastEvent">
-        <span class="circle">{{index}}</span> happened {{time}} ago.
-      </script>
-
-      <script type="text/template" id="templateFutureEvent">
-        <span class="circle">{{index}}</span> will happen in {{time}}.
-      </script>
-
-      <div id="error" class="alert alert-danger text-center hidden"></div>
+      <div id="errors" class="alert alert-danger text-center hidden"></div>
 
       <form class="form-horizontal form-fixed-width" id="form" role="form" method="get">
-
         <div class="form-group text-right add-event" id="add">
           <a href="#" id="addEvent">&#10010; Add event</a>
         </div>
-
         <div class="form-group">
           <button type="submit" class="btn btn-block btn-primary">Compute</button>
         </div>
-
       </form>
 
-      <div id="timers">
+      <div id="output">
         <hr>
-
-        <div class="markers">
+        <div class="markerOffset">
+          <div class="markers"></div>
+          <div class="progress progress-striped active">
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" ></div>
+            <div class="value"></div>
+          </div>
+          <div class="alert text-center"></div>
         </div>
-
-        <div id="progress" class="progress progress-striped active">
-          <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
-          <div id="progressValue"></div>
-        </div>
-
-        <div id="eta" class="alert text-center"></div>
       </div>
 
       <hr>
@@ -85,6 +52,32 @@
         <a href="https://github.com/astorije/cantwait">This is free software</a> by <a href="http://jeremie.astori.fr/">Jérémie Astori</a>
       </footer>
     </div>
+
+    <script type="text/template" id="template-input">
+      <div class="form-group event">
+        <label for="{{id}}" class="control-label circle">{{index}}</label>
+        <input type="datetime" class="form-control" id="{{id}}" name="e" value="{{value}}" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">
+        <button type="button" class="close delete-event" aria-hidden="true">&times;</button>
+      </div>
+    </script>
+
+    <script type="text/template" id="template-marker">
+      <span class="circle" style="left: {{left}}">{{index}}</span>
+    </script>
+
+    <script type="text/template" id="template-invalidEvent">
+      <span class="circle">{{index}}</span> is invalid.
+    </script>
+    <script type="text/template" id="template-predatedEvent">
+      <span class="circle">{{index1}}</span> must happen before <span class="circle">{{index2}}</span>.
+    </script>
+
+    <script type="text/template" id="template-pastEvent">
+      <span class="circle">{{index}}</span> happened {{time}} ago.
+    </script>
+    <script type="text/template" id="template-futureEvent">
+      <span class="circle">{{index}}</span> will happen in {{time}}.
+    </script>
 
     <script src="js/main.js"></script>
   </body>

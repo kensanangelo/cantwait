@@ -1,15 +1,3 @@
-.progress {
-  position: relative;
-}
-
-#progressValue {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  font-weight: bold;
-  text-align: center;
-}
-
 body {
   padding-bottom: 15px;
 }
@@ -24,14 +12,27 @@ header a:hover {
   text-decoration: none;
 }
 
-#error ul, #eta ul {
+.alert ul {
   list-style: none;
   margin: -8px 0;
   padding-left: 0;
 }
 
-#error li, #eta li {
+.alert li {
   margin: 8px 0;
+}
+
+.progress {
+  position: relative;
+}
+
+.progress .value {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+  color: black;
 }
 
 .circle {
@@ -61,17 +62,21 @@ header a:hover {
 .markers {
   height: 26px;
   position: relative;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   overflow: visible;
 }
 
-#error .circle, #eta .circle {
+.alert .circle {
   margin: 0 2px;
 }
 
+.markerOffset {
+  margin: 0 13px;
+}
+
 .has-error .circle {
-    border: 1px solid #ebccd1;
-    background-color: #f2dede;
+  border: 1px solid #ebccd1;
+  background-color: #f2dede;
 }
 
 .form-fixed-width {

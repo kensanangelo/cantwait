@@ -15,14 +15,12 @@ var uriParameters = function () {
     return params;
 } ();
 
-function hideTimers() {
-  document.getElementById('timers').classList.add("hidden");
+function hideOutput() {
+  document.querySelector('#output').classList.add("hidden");
 }
 
-function displayErrors(error) {
-  var errorDiv = document.getElementById('error');
-  errorDiv.classList.remove("hidden");
-  errorDiv.innerHTML =  "<ul>" + errors.reduce(function(previousValue, currentValue, index, array){
+function buildList(array) {
+  return "<ul>" + array.reduce(function(previousValue, currentValue, index, array){
     return previousValue + "<li>" + currentValue + "</li>\n";
   }, "") + "</ul>";
 }
@@ -43,25 +41,52 @@ function prettyPrintDelta(delta) {
   return output;
 }
 
-function displayCounters(counters) {
-  document.querySelector("#eta").innerHTML =  "<ul>" + counters.reduce(function(previousValue, currentValue){
-    return previousValue + "<li>" + currentValue + "</li>\n";
-  }, "") + "</ul>";
+/**
+ * Decimal adjustment of a number.
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
+ *
+ * @param {Number}  value The number.
+ * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
+ * @returns {Number}      The adjusted value.
+ */
+function round(value, exp) {
+  // If the exp is undefined or zero...
+  if (typeof exp === 'undefined' || +exp === 0)
+    return Math.round(value);
+
+  value = +value;
+  exp = +exp;
+
+  // If the value is not a number or the exp is not an integer...
+  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
+    return NaN;
+
+  // Shift
+  value = value.toString().split('e');
+  value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+
+  // Shift back
+  value = value.toString().split('e');
+  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
 }
 
 function computeProgressBar(ratio) {
   ratio = Math.min(Math.max(0.0, ratio), 1.0);
 
-  var progress    = document.getElementById("progress"),
-      progressBar = document.getElementById("progressBar");
-
-  document.getElementById("progressValue").innerHTML = (Math.round(100 * ratio * 100) / 100) + ' %';
+  var progress    = document.querySelector("#output .progress"),
+      progressBar = document.querySelector("#output .progress-bar"),
+      value = round(100 * ratio, 2);
+  document.querySelector("#output .value").innerHTML =  value + " %";
   progressBar.style.width = (100 * ratio) + "%";
-  progressBar.setAttribute("aria-valuenow", 100 * ratio);
+  progressBar.setAttribute("aria-valuenow", value);
 
   if(ratio === 1.0) {
     progress.classList.remove("active");
     progressBar.classList.add("progress-bar-success");
+  }
+  else {
+    progress.classList.add("active");
+    progressBar.classList.remove("progress-bar-success");
   }
 }
 
@@ -69,23 +94,25 @@ function playTimers() {
   function loop() {
     var currentTime = new Date();
 
-    var ratio = Math.round((currentTime - dateEvents[0]) / 1000) * 1000 / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
+    var ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
     computeProgressBar(ratio);
 
     var counters = [];
     forEach(dateEvents, function(element, index) {
-      counters.push(render(document.querySelector(currentTime >= element ? "#templatePastEvent" : "#templateFutureEvent").innerHTML, {
+      counters.push(render(currentTime >= element ? "pastEvent" : "futureEvent", {
         index: index + 1,
-        time: prettyPrintDelta(Math.round(Math.abs(currentTime - element) / 1000))
+        time: prettyPrintDelta(round(Math.abs(currentTime - element) / 1000))
       }));
     });
-    displayCounters(counters);
+    document.querySelector("#output .alert").innerHTML = buildList(counters);
 
-    var etaClassList = document.querySelector("#eta").classList;
-    etaClassList.remove("alert-warning");
-    etaClassList.remove("alert-success");
-    etaClassList.remove("alert-info");
-    etaClassList.add(
+    var alertClasses = document.querySelector("#output .alert").classList;
+
+    forEach(["alert-warning", "alert-success", "alert-info"], function(element) {
+      alertClasses.remove(element);
+    });
+
+    alertClasses.add(
       ratio <  0.0 ? "alert-warning" :
       ratio >= 1.0 ? "alert-success" :
                      "alert-info"
@@ -96,7 +123,8 @@ function playTimers() {
   window.setInterval(loop, 1000);
 }
 
-function render(template, data) {
+function render(templateId, data) {
+  var template = document.querySelector("#template-" + templateId).innerHTML;
   for (var key in data)
     template = template.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
   return template;
@@ -132,7 +160,7 @@ for (var i = 0; i < events.length; i++) {
 }
 
 forEach(dateEvents, function(element, index, array) {
-  var newMarker = stringToElement(render(document.querySelector("#templateCircle").innerHTML, {
+  var newMarker = stringToElement(render("marker", {
     index: index + 1,
     left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
   }));
@@ -142,7 +170,9 @@ forEach(dateEvents, function(element, index, array) {
 for (var i = 0; i < dateEvents.length; i++) {
   if (isNaN(dateEvents[i])) {
     document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-    errors.push(render(document.querySelector("#templateInvalidEvent").innerHTML, { index: i + 1}));
+    errors.push(render("invalidEvent", {
+      index: i + 1
+    }));
   }
 }
 
@@ -150,7 +180,7 @@ for (var i = 0; i < dateEvents.length - 1; i++) {
   if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
     document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
     document.querySelector(".form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
-    errors.push(render(document.querySelector("#templatePredatedEvent").innerHTML, {
+    errors.push(render("predatedEvent", {
       index1: i + 1,
       index2: i + 2
     }));
@@ -160,9 +190,11 @@ for (var i = 0; i < dateEvents.length - 1; i++) {
 if(events.length >= 2 && errors.length === 0)
   playTimers();
 else {
-  hideTimers();
-  if(events.length >= 2)
-    displayErrors();
+  hideOutput();
+  if(events.length >= 2) {
+    document.querySelector("#errors").innerHTML = buildList(errors);
+    document.querySelector('#errors').classList.remove("hidden");
+  }
 }
 
 function forEach(elements, callback) {
@@ -170,9 +202,9 @@ function forEach(elements, callback) {
 }
 
 function newEvent(id, index, value) {
-  value = typeof value === "undefined" ? "" : value;
+  value = (typeof value === "undefined") ? "" : value;
 
-  var clone = stringToElement(render(document.querySelector("#templateInput").innerHTML, {
+  var clone = stringToElement(render("input", {
     id: id,
     index: index,
     value: value //new Date().toUTCString()
