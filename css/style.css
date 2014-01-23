@@ -10,9 +10,18 @@
   text-align: center;
 }
 
-h1 {
+body {
+  padding-bottom: 15px;
+}
+
+header a {
   font-family: 'Alex Brush', Arial, sans-serif;
   font-size: 60px;
+  color: inherit;
+}
+
+header a:hover {
+  text-decoration: none;
 }
 
 #error ul, #eta ul {
