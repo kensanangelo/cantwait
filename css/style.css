@@ -26,6 +26,12 @@ header a:hover {
 
 #error ul, #eta ul {
   list-style: none;
+  margin: -8px 0;
+  padding-left: 0;
+}
+
+#error li, #eta li {
+  margin: 8px 0;
 }
 
 .circle {
@@ -60,7 +66,7 @@ header a:hover {
 }
 
 #error .circle, #eta .circle {
-  margin: 2px;
+  margin: 0 2px;
 }
 
 .has-error .circle {
