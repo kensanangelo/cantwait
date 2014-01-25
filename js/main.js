@@ -55,7 +55,7 @@ function round(value, exp) {
     return Math.round(value);
 
   value = +value;
-  exp = +exp;
+  exp   = +exp;
 
   // If the value is not a number or the exp is not an integer...
   if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
@@ -136,28 +136,61 @@ function stringToElement(str) {
   return div.firstElementChild;
 }
 
-var events = uriParameters['e'];
-var dateEvents = [];
-var id = -1;
-var errors = [];
-
-if(events === undefined || events.length < 2) {
-  newEvent(++id, 1);
-  newEvent(++id, 2);
-  events = [];
+function forEach(elements, callback) {
+  [].forEach.call(elements, callback);
 }
-else
-  for (var i = 0; i < uriParameters['e'].length; i++)
-    newEvent(++id, i + 1, uriParameters['e'][i]);
 
-if (document.querySelectorAll("#form .event").length <= 2)
-  forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
-    element.classList.add("hidden");
+function generateId() {
+  return Math.random().toString(36).substr(2, 16);
+}
+
+function newEvent(value) {
+  value = (typeof value === "undefined") ? "" : value;
+
+  var eventElement = stringToElement(render("input", {
+    id: generateId(),
+    index: document.querySelector("#events").children.length + 1,
+    value: value
+  }));
+
+  eventElement.querySelector(".close").addEventListener("click", function(evt) {
+    document.querySelector("#events").removeChild(this.parentNode);
+
+    forEach(document.querySelectorAll("#form label"), function(element, index) {
+      element.innerHTML = index + 1;
+    });
+
+    if (document.querySelector("#events").children.length <= 2)
+      forEach(document.querySelectorAll("#form .close"), function(element) {
+        element.classList.add("hidden");
+      });
+
+    evt.preventDefault();
   });
+
+  document.querySelector("#events").appendChild(eventElement);
+}
+
+var events = (typeof uriParameters['e'] !== "undefined") ? uriParameters['e'] : [];
+var dateEvents = [];
+var errors = [];
 
 for (var i = 0; i < events.length; i++) {
   dateEvents.push(new Date(events[i]));
 }
+
+if(events.length < 2) {
+  newEvent();
+  newEvent();
+}
+else
+  for (var i = 0; i < uriParameters['e'].length; i++)
+    newEvent(uriParameters['e'][i]);
+
+if (document.querySelector("#events").children.length <= 2)
+  forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
+    element.classList.add("hidden");
+  });
 
 forEach(dateEvents, function(element, index, array) {
   var newMarker = stringToElement(render("marker", {
@@ -187,6 +220,17 @@ for (var i = 0; i < dateEvents.length - 1; i++) {
   }
 }
 
+document.querySelector("#addEvent").addEventListener("click", function(e) {
+  newEvent();
+
+  if (document.querySelector("#events").children.length > 2)
+    forEach(document.querySelectorAll("#form .close"), function(element) {
+      element.classList.remove("hidden");
+    });
+
+  e.preventDefault();
+});
+
 if(events.length >= 2 && errors.length === 0)
   playTimers();
 else {
@@ -196,45 +240,3 @@ else {
     document.querySelector('#errors').classList.remove("hidden");
   }
 }
-
-function forEach(elements, callback) {
-  [].forEach.call(elements, callback);
-}
-
-function newEvent(id, index, value) {
-  value = (typeof value === "undefined") ? "" : value;
-
-  var clone = stringToElement(render("input", {
-    id: id,
-    index: index,
-    value: value //new Date().toUTCString()
-  }));
-
-  clone.querySelector(".close").addEventListener("click", function(evt) {
-    this.parentNode.parentNode.removeChild(this.parentNode);
-
-    forEach(document.querySelectorAll("#form label"), function(element, index, array) {
-      element.innerHTML = index + 1;
-    });
-
-    if (document.querySelectorAll("#form .event").length <= 2)
-      forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
-        element.classList.add("hidden");
-      });
-
-    evt.preventDefault();
-  });
-
-  document.querySelector("#form").insertBefore(clone, document.querySelector("#add"));
-}
-
-document.querySelector("#addEvent").addEventListener("click", function(e) {
-  newEvent(++id, document.querySelectorAll("#form .event").length + 1);
-
-  if (document.querySelectorAll("#form .event").length > 2)
-    forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
-      element.classList.remove("hidden");
-    });
-
-  e.preventDefault();
-});
