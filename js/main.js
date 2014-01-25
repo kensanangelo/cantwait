@@ -19,12 +19,25 @@ function hideOutput() {
   document.querySelector('#output').classList.add("hidden");
 }
 
+/**
+ * Build a HTML <ul> list for each string of an array
+ *
+ * @param   {String[]} array  The elements to be used
+ * @returns {String}          The built <ul> list
+ */
 function buildList(array) {
   return "<ul>" + array.reduce(function(previousValue, currentValue, index, array){
     return previousValue + "<li>" + currentValue + "</li>\n";
   }, "") + "</ul>";
 }
 
+/**
+ * Transforms a number of seconds into a human-readable (if this human reads English) string.
+ * It will show weeks, days, minutes and seconds in a way the the first unit will not be a zero
+ *
+ * @param   {Number} delta  The number of seconds to compute
+ * @returns {String}        The human-readable string
+ */
 function prettyPrintDelta(delta) {
   var weeks   = Math.floor(delta / 604800),
       days    = Math.floor(delta / 86400) % 7,
@@ -43,11 +56,11 @@ function prettyPrintDelta(delta) {
 
 /**
  * Decimal adjustment of a number.
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
+ * Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
  *
- * @param {Number}  value The number.
- * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
- * @returns {Number}      The adjusted value.
+ * @param   {(Number|String)} value    The number.
+ * @param   {Number}          [exp=0]  The exponent (the 10 logarithm of the adjustment base).
+ * @returns {Number}                   The adjusted value.
  */
 function round(value, exp) {
   // If the exp is undefined or zero...
@@ -123,6 +136,13 @@ function playTimers() {
   window.setInterval(loop, 1000);
 }
 
+/**
+ * Renders a set of data inside a template
+ *
+ * @param   {String} templateId  The name that will be used to fetch the template content from the HTML markup
+ * @param   {Object} data        The set of data to be used. Keys must exist with format {{key}} to be used in the template
+ * @returns {String}             The template after rendering the data
+ */
 function render(templateId, data) {
   var template = document.querySelector("#template-" + templateId).innerHTML;
   for (var key in data)
@@ -130,16 +150,33 @@ function render(templateId, data) {
   return template;
 }
 
+/**
+ * Transforms a string-based HTML element into a native HTML element where DOM API applies
+ *
+ * @param   {String}  str  A string containing an HTML element
+ * @returns {Element}      An HTML element
+ */
 function stringToElement(str) {
   var div = document.createElement('div');
   div.innerHTML = str;
   return div.firstElementChild;
 }
 
+/**
+ * Generic usage of Array.prototype.forEach that can also be used on NodeList elements.
+ *
+ * @param {(*[]|NodeList)} elements  The elements to be processed
+ * @param {} callback                Function to execute for each element
+ */
 function forEach(elements, callback) {
   [].forEach.call(elements, callback);
 }
 
+/**
+ * Generate a random identifier, random enough to be considered as unique.
+ *
+ * @returns {Number}  A random string (16 alphanumerical characters)
+ */
 function generateId() {
   return Math.random().toString(36).substr(2, 16);
 }
@@ -175,9 +212,9 @@ var events = (typeof uriParameters['e'] !== "undefined") ? uriParameters['e'] : 
 var dateEvents = [];
 var errors = [];
 
-for (var i = 0; i < events.length; i++) {
-  dateEvents.push(new Date(events[i]));
-}
+forEach(events, function(element) {
+  dateEvents.push(new Date(element));
+});
 
 if(events.length < 2) {
   newEvent();
