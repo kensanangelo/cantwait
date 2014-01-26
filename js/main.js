@@ -301,11 +301,18 @@ controller();
 document.querySelector("#form").addEventListener("submit", function(e) {
   e.preventDefault();
 
+
   events = [];
 
   forEach(document.querySelectorAll("#events input"), function(element) {
     events.push(element.value);
   });
+
+
+
+  history.pushState(events, document.title, "?" + events.map(function(element) {
+    return "e=" + encodeURIComponent(element);
+  }).join("&"));
 
   controller();
   // Mettre à jour l'URL
