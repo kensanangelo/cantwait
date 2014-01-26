@@ -15,6 +15,10 @@ var uriParameters = function () {
     return params;
 } ();
 
+function showOutput() {
+  document.querySelector('#output').classList.remove("hidden");
+}
+
 function hideOutput() {
   document.querySelector('#output').classList.add("hidden");
 }
@@ -199,7 +203,7 @@ function newEvent(value) {
 
     if (document.querySelector("#events").children.length <= 2)
       forEach(document.querySelectorAll("#form .close"), function(element) {
-        element.classList.add("hidden");
+        hide(element);
       });
 
     evt.preventDefault();
@@ -208,53 +212,122 @@ function newEvent(value) {
   document.querySelector("#events").appendChild(eventElement);
 }
 
-var events = (typeof uriParameters['e'] !== "undefined") ? uriParameters['e'] : [];
-var dateEvents = [];
-var errors = [];
+function controller() {
 
-forEach(events, function(element) {
-  dateEvents.push(new Date(element));
-});
+  var errors = [];
 
-if(events.length < 2) {
-  newEvent();
-  newEvent();
-}
-else
-  for (var i = 0; i < uriParameters['e'].length; i++)
-    newEvent(uriParameters['e'][i]);
 
-if (document.querySelector("#events").children.length <= 2)
-  forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
-    element.classList.add("hidden");
+  var box = document.querySelector("#events");
+  while(box.firstChild)
+    box.removeChild(box.firstChild);
+
+  dateEvents = [];
+
+  forEach(events, function(element) {
+    dateEvents.push(new Date(element));
   });
 
-forEach(dateEvents, function(element, index, array) {
-  var newMarker = stringToElement(render("marker", {
-    index: index + 1,
-    left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
-  }));
-  document.querySelector(".markers").appendChild(newMarker);
-});
-
-for (var i = 0; i < dateEvents.length; i++) {
-  if (isNaN(dateEvents[i])) {
-    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-    errors.push(render("invalidEvent", {
-      index: i + 1
-    }));
+  if(dateEvents.length < 2) {
+    newEvent();
+    newEvent();
   }
+  else
+    forEach(events, function(element) {
+      newEvent(element);
+    });
+
+
+
+
+  if (document.querySelector("#events").children.length <= 2)
+    forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
+      hide(element);
+    });
+
+
+  for (var i = 0; i < dateEvents.length; i++) {
+    if (isNaN(dateEvents[i])) {
+      document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
+      errors.push(render("invalidEvent", {
+        index: i + 1
+      }));
+    }
+  }
+
+  for (var i = 0; i < dateEvents.length - 1; i++) {
+    if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
+      document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
+      document.querySelector(".form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
+      errors.push(render("predatedEvent", {
+        index1: i + 1,
+        index2: i + 2
+      }));
+    }
+  }
+
+  forEach(dateEvents, function(element, index, array) {
+    var newMarker = stringToElement(render("marker", {
+      index: index + 1,
+      left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
+    }));
+    document.querySelector(".markers").appendChild(newMarker);
+  });
+
+
+
+  if(events.length >= 2 && errors.length === 0) {
+    showOutput();
+    playTimers();
+      document.querySelector("#errors").innerHTML = "";
+      hide(document.querySelector('#errors'));
+  }
+  else {
+    hideOutput();
+    // stopTimers();
+    if(events.length >= 2) {
+      document.querySelector("#errors").innerHTML = buildList(errors);
+      show(document.querySelector('#errors'));
+    }
+  }
+
 }
 
-for (var i = 0; i < dateEvents.length - 1; i++) {
-  if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
-    document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-    document.querySelector(".form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
-    errors.push(render("predatedEvent", {
-      index1: i + 1,
-      index2: i + 2
-    }));
-  }
+var dateEvents = [];
+var events = (typeof uriParameters['e'] !== "undefined") ? uriParameters['e'] : [];
+
+controller();
+
+
+document.querySelector("#form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  events = [];
+
+  forEach(document.querySelectorAll("#events input"), function(element) {
+    events.push(element.value);
+  });
+
+  controller();
+  // Mettre à jour l'URL
+
+});
+
+/**
+ * Displays a non-visible HTML element
+ *
+ * @param {Element} element The HTML element to show
+ */
+function show(element) {
+  element.classList.remove("hidden");
+}
+
+/**
+ * Hides an HTML element
+ *
+ * @param {Element} element The HTML element to show
+ */
+function hide(element) {
+  element.classList.add("hidden");
 }
 
 document.querySelector("#addEvent").addEventListener("click", function(e) {
@@ -262,18 +335,8 @@ document.querySelector("#addEvent").addEventListener("click", function(e) {
 
   if (document.querySelector("#events").children.length > 2)
     forEach(document.querySelectorAll("#form .close"), function(element) {
-      element.classList.remove("hidden");
+      show(element);
     });
 
   e.preventDefault();
 });
-
-if(events.length >= 2 && errors.length === 0)
-  playTimers();
-else {
-  hideOutput();
-  if(events.length >= 2) {
-    document.querySelector("#errors").innerHTML = buildList(errors);
-    document.querySelector('#errors').classList.remove("hidden");
-  }
-}
