@@ -299,6 +299,9 @@ var events = (typeof uriParameters['e'] !== "undefined") ? uriParameters['e'] : 
 
 controller();
 
+history.replaceState({
+  events: events,
+}, document.title);
 
 document.querySelector("#form").addEventListener("submit", function(e) {
   e.preventDefault();
@@ -309,7 +312,9 @@ document.querySelector("#form").addEventListener("submit", function(e) {
     events.push(element.value);
   });
 
-  history.pushState({events: events}, document.title, "?" + events.map(function(element) {
+  history.pushState({
+    events: events
+  }, document.title, "?" + events.map(function(element) {
     return "e=" + encodeURIComponent(element);
   }).join("&"));
 
