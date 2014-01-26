@@ -214,6 +214,8 @@ function newEvent(value) {
 
 function controller() {
 
+  console.log("on met à jour !");
+
   var errors = [];
 
 
@@ -301,21 +303,27 @@ controller();
 document.querySelector("#form").addEventListener("submit", function(e) {
   e.preventDefault();
 
-
   events = [];
 
   forEach(document.querySelectorAll("#events input"), function(element) {
     events.push(element.value);
   });
 
-
-
-  history.pushState(events, document.title, "?" + events.map(function(element) {
+  history.pushState({events: events}, document.title, "?" + events.map(function(element) {
     return "e=" + encodeURIComponent(element);
   }).join("&"));
 
   controller();
-  // Mettre à jour l'URL
+
+});
+
+window.addEventListener("popstate", function (e) {
+  if(e.state === null)
+    return;
+
+  events = e.state.events;
+
+  controller();
 
 });
 
