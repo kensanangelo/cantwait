@@ -1,20 +1,3 @@
-var uriParameters = function () {
-  var params = {},
-      vars = window.location.search.substring(1).split("&");
-
-  for (var i = 0; i < vars.length; ++i) {
-    var pair = vars[i].split("="),
-        key = decodeURIComponent(pair[0]),
-        val = decodeURIComponent(pair[1]);
-
-    if (typeof params[key] === "undefined")
-      params[key] = [val];
-    else
-      params[key].push(val);
-  }
-    return params;
-} ();
-
 /**
  * Build a HTML <ul> list for each string of an array
  *
@@ -100,7 +83,7 @@ function computeProgressBar(ratio) {
 }
 
 function playTimers(dateEvents) {
-  (function loop() {
+  function loop() {
     var currentTime = new Date();
 
     var ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
@@ -127,9 +110,10 @@ function playTimers(dateEvents) {
       ratio >= 1.0 ? "alert-success" :
                      "alert-info"
     );
-  }) ();
+  }
 
-  // loop();
+  loop();
+
   document.dispatchEvent(new CustomEvent("timerStarted", {
     detail: {
       newIntervalId: window.setInterval(loop, 1000)
@@ -167,10 +151,21 @@ function stringToElement(str) {
  * Generic usage of Array.prototype.forEach that can also be used on NodeList elements.
  *
  * @param {(*[]|NodeList)} elements  The elements to be processed
- * @param {} callback                Function to execute for each element
+ * @param {}               callback  Function to execute for each element
  */
 function forEach(elements, callback) {
   [].forEach.call(elements, callback);
+}
+
+/**
+ * Generic usage of Array.prototype.map that can also be used on NodeList elements.
+ *
+ * @param {(*[]|NodeList)} elements  The elements to be processed
+ * @param {}               callback  Function to execute for each element
+ * @return *[]                       The mapped array
+ */
+function map(elements, callback) {
+  return [].map.call(elements, callback);
 }
 
 /**
@@ -221,12 +216,10 @@ function removeAllChildren(element) {
 }
 
 
-function newEventInput(value) {
-  value = (typeof value === "undefined") ? "" : value;
-
+function newEventInput(value, index, showCloseBtn) {
   var eventElement = stringToElement(render("input", {
     id: generateId(),
-    index: document.querySelector("#events").children.length + 1,
+    index: index,
     value: value
   }));
 
@@ -236,19 +229,30 @@ function newEventInput(value) {
     document.dispatchEvent(new Event("eventDeleted"));
   });
 
+  if(!showCloseBtn)
+    hide(eventElement.querySelector(".close"));
+
   return eventElement;
 }
 
+function createEventInputs(strings) {
+  if(strings.length < 2)
+    return [].push(newEventInput("", 1, false))
+             .push(newEventInput("", 2, false));
+  else
+    return map(strings, function(element, index) {
+      return newEventInput(element, index + 1, strings.length > 2);
+    });
+}
+
 function controller(events) {
-  var dateEvents = events.map(Date.parse);
+  var dateEvents = map(events, Date.parse);
 
   var errorsElement  = document.querySelector("#errors"),
       markersElement = document.querySelector(".markers"),
       outputElement  = document.querySelector("#output");
 
   var errors = [];
-
-  // stopTimers();
 
   removeAllChildren(markersElement);
   removeAllChildren(errorsElement);
@@ -304,84 +308,61 @@ function controller(events) {
   }
 }
 
-var events = (typeof uriParameters['e'] !== "undefined") ? uriParameters['e'] : [];
+// EVENT HANDLERS
+// --------------
 
-history.replaceState({
-  events: events,
-}, document.title);
-
-// Create the inputs
-if(events.length < 2) {
-  document.querySelector("#events").appendChild(newEventInput());
-  document.querySelector("#events").appendChild(newEventInput());
-}
-else forEach(events, function(element) {
-  document.querySelector("#events").appendChild(newEventInput(element));
-});
-
-if(events.length > 2)
-  show(document.querySelectorAll("#form .close"));
-else
-  hide(document.querySelectorAll("#form .close"));
-
-controller(events);
-
-var currentIntervalId;
-
+// Stops the previous timer when a new one is started
 document.addEventListener("timerStarted", function(e) {
   if(typeof currentIntervalId !== "undefined")
     clearInterval(currentIntervalId);
   currentIntervalId = e.detail.newIntervalId;
 });
 
-
+// The user submitted the form for computation
 document.querySelector("#form").addEventListener("submit", function(e) {
   e.preventDefault();
 
-  var events = [];
-
-  forEach(document.querySelectorAll("#events input"), function(element) {
-    events.push(element.value);
+  var events = map(document.querySelectorAll("#events input"), function(element) {
+    return element.value;
   });
 
   history.pushState({
     events: events
-  }, document.title, "?" + events.map(function(element) {
+  }, document.title, "?" + map(events, function(element) {
     return "e=" + encodeURIComponent(element);
   }).join("&"));
 
   controller(events);
 });
 
+// The user moved into the history of the browser
 window.addEventListener("popstate", function (e) {
   if(e.state === null)
     return;
 
+  var events = e.state.events;
+
   removeAllChildren(document.querySelector("#events"));
 
-  // Create the inputs
-  if(events.length < 2) {
-    document.querySelector("#events").appendChild(newEventInput());
-    document.querySelector("#events").appendChild(newEventInput());
-  }
-  else forEach(events, function(element) {
-    document.querySelector("#events").appendChild(newEvent(element));
+  forEach(createEventInputs(events), function (element) {
+    document.querySelector("#events").appendChild(element);
   });
 
-  if(events.length > 2)
-    show(document.querySelectorAll("#form .close"));
-  else
-    hide(document.querySelectorAll("#form .close"));
-
-  controller(e.state.events);
+  controller(events);
 });
 
+// The user requested the addition of a new event input to the form
 document.querySelector("#addEvent").addEventListener("click", function(e) {
   e.preventDefault();
-  document.querySelector("#events").appendChild(newEventInput());
+  document.querySelector("#events").appendChild(newEventInput(
+    "",
+    document.querySelector("#events").children.length + 2,
+    true
+  ));
   show(document.querySelectorAll("#form .close"));
 });
 
+// The user deleted an event input from the form
 document.addEventListener("eventDeleted", function() {
   forEach(document.querySelectorAll("#form label"), function(element, index) {
     element.textContent = index + 1;
@@ -390,3 +371,22 @@ document.addEventListener("eventDeleted", function() {
   if (document.querySelector("#events").children.length <= 2)
     hide(document.querySelectorAll("#form .close"));
 });
+
+var currentIntervalId;
+
+var events = map(window.location.search.substring(1).split("&"), function (element) {
+  var pair = element.split("="),
+      key = decodeURIComponent(pair[0]),
+      val = decodeURIComponent(pair[1]);
+  return key === "e" ? val : null;
+}).filter(function (element) { return element !== null; });
+
+history.replaceState({
+  events: events,
+}, document.title);
+
+forEach(createEventInputs(events), function (element) {
+  document.querySelector("#events").appendChild(element);
+});
+
+controller(events);
