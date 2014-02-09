@@ -15,24 +15,16 @@ var uriParameters = function () {
     return params;
 } ();
 
-function showOutput() {
-  document.querySelector('#output').classList.remove("hidden");
-}
-
-function hideOutput() {
-  document.querySelector('#output').classList.add("hidden");
-}
-
 /**
  * Build a HTML <ul> list for each string of an array
  *
  * @param   {String[]} array  The elements to be used
- * @returns {String}          The built <ul> list
+ * @returns {Element}         The built <ul> list
  */
 function buildList(array) {
-  return "<ul>" + array.reduce(function(previousValue, currentValue, index, array){
+  return stringToElement("<ul>" + array.reduce(function(previousValue, currentValue, index, array){
     return previousValue + "<li>" + currentValue + "</li>\n";
-  }, "") + "</ul>";
+  }, "") + "</ul>");
 }
 
 /**
@@ -107,8 +99,8 @@ function computeProgressBar(ratio) {
   }
 }
 
-function playTimers() {
-  function loop() {
+function playTimers(dateEvents) {
+  (function loop() {
     var currentTime = new Date();
 
     var ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
@@ -121,7 +113,8 @@ function playTimers() {
         time: prettyPrintDelta(round(Math.abs(currentTime - element) / 1000))
       }));
     });
-    document.querySelector("#output .alert").innerHTML = buildList(counters);
+    removeAllChildren(document.querySelector("#output .alert"));
+    document.querySelector("#output .alert").appendChild(buildList(counters));
 
     var alertClasses = document.querySelector("#output .alert").classList;
 
@@ -134,10 +127,14 @@ function playTimers() {
       ratio >= 1.0 ? "alert-success" :
                      "alert-info"
     );
-  }
+  }) ();
 
-  loop();
-  window.setInterval(loop, 1000);
+  // loop();
+  document.dispatchEvent(new CustomEvent("timerStarted", {
+    detail: {
+      newIntervalId: window.setInterval(loop, 1000)
+    }
+  }));
 }
 
 /**
@@ -148,7 +145,7 @@ function playTimers() {
  * @returns {String}             The template after rendering the data
  */
 function render(templateId, data) {
-  var template = document.querySelector("#template-" + templateId).innerHTML;
+  var template = document.querySelector("#template-" + templateId).textContent;
   for (var key in data)
     template = template.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
   return template;
@@ -185,7 +182,46 @@ function generateId() {
   return Math.random().toString(36).substr(2, 16);
 }
 
-function newEvent(value) {
+/**
+ * Displays a non-visible HTML element
+ *
+ * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to show
+ */
+function show(elements) {
+  if(typeof elements.length === "undefined")
+    elements.classList.remove("hidden");
+  else
+    forEach(elements, function(element) {
+      element.classList.remove("hidden");
+    });
+}
+
+/**
+ * Hides an HTML element
+ *
+ * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to hide
+ */
+function hide(elements) {
+  if(typeof elements.length === "undefined")
+    elements.classList.add("hidden");
+  else
+    forEach(elements, function(element) {
+      element.classList.add("hidden");
+    });
+}
+
+/**
+ * Removes all children ofa given HTML element
+ *
+ * @param {Element} element  The element to empty
+ */
+function removeAllChildren(element) {
+  while(element.firstChild)
+    element.removeChild(element.firstChild);
+}
+
+
+function newEventInput(value) {
   value = (typeof value === "undefined") ? "" : value;
 
   var eventElement = stringToElement(render("input", {
@@ -195,71 +231,51 @@ function newEvent(value) {
   }));
 
   eventElement.querySelector(".close").addEventListener("click", function(evt) {
-    document.querySelector("#events").removeChild(this.parentNode);
-
-    forEach(document.querySelectorAll("#form label"), function(element, index) {
-      element.innerHTML = index + 1;
-    });
-
-    if (document.querySelector("#events").children.length <= 2)
-      forEach(document.querySelectorAll("#form .close"), function(element) {
-        hide(element);
-      });
-
     evt.preventDefault();
+    eventElement.remove();
+    document.dispatchEvent(new Event("eventDeleted"));
   });
 
-  document.querySelector("#events").appendChild(eventElement);
+  return eventElement;
 }
 
-function controller() {
+function controller(events) {
+  var dateEvents = events.map(Date.parse);
 
-  console.log("on met à jour !");
+  var errorsElement  = document.querySelector("#errors"),
+      markersElement = document.querySelector(".markers"),
+      outputElement  = document.querySelector("#output");
 
   var errors = [];
 
+  // stopTimers();
 
-  var box = document.querySelector("#events");
-  while(box.firstChild)
-    box.removeChild(box.firstChild);
+  removeAllChildren(markersElement);
+  removeAllChildren(errorsElement);
 
-  dateEvents = [];
+  hide(errorsElement);
+  hide(outputElement);
 
-  forEach(events, function(element) {
-    dateEvents.push(new Date(element));
+
+  forEach(document.querySelectorAll("#events .form-group"), function(element) {
+    element.classList.remove("has-error");
   });
 
-  if(dateEvents.length < 2) {
-    newEvent();
-    newEvent();
-  }
-  else
-    forEach(events, function(element) {
-      newEvent(element);
-    });
-
-
-
-
-  if (document.querySelector("#events").children.length <= 2)
-    forEach(document.querySelectorAll("#form .close"), function(element, index, array) {
-      hide(element);
-    });
-
-
+  // Validates the date format
   for (var i = 0; i < dateEvents.length; i++) {
     if (isNaN(dateEvents[i])) {
-      document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
+      document.querySelector("#events .form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
       errors.push(render("invalidEvent", {
         index: i + 1
       }));
     }
   }
 
-  for (var i = 0; i < dateEvents.length - 1; i++) {
+  // Validates the order on dates
+  for (i = 0; i < dateEvents.length - 1; i++) {
     if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
-      document.querySelector(".form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-      document.querySelector(".form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
+      document.querySelector("#events .form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
+      document.querySelector("#events .form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
       errors.push(render("predatedEvent", {
         index1: i + 1,
         index2: i + 2
@@ -267,46 +283,62 @@ function controller() {
     }
   }
 
+  // Creates the circled markers above the progress bar
   forEach(dateEvents, function(element, index, array) {
     var newMarker = stringToElement(render("marker", {
       index: index + 1,
       left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
     }));
-    document.querySelector(".markers").appendChild(newMarker);
+    markersElement.appendChild(newMarker);
   });
 
-
-
-  if(events.length >= 2 && errors.length === 0) {
-    showOutput();
-    playTimers();
-      document.querySelector("#errors").innerHTML = "";
-      hide(document.querySelector('#errors'));
-  }
-  else {
-    hideOutput();
-    // stopTimers();
-    if(events.length >= 2) {
-      document.querySelector("#errors").innerHTML = buildList(errors);
-      show(document.querySelector('#errors'));
-    }
+  if(errors.length !== 0) {
+    errorsElement.appendChild(buildList(errors));
+    show(errorsElement);
+    hide(outputElement);
   }
 
+  if(dateEvents.length >= 2 && errors.length === 0) {
+    show(outputElement);
+    playTimers(dateEvents);
+  }
 }
 
-var dateEvents = [];
 var events = (typeof uriParameters['e'] !== "undefined") ? uriParameters['e'] : [];
-
-controller();
 
 history.replaceState({
   events: events,
 }, document.title);
 
+// Create the inputs
+if(events.length < 2) {
+  document.querySelector("#events").appendChild(newEventInput());
+  document.querySelector("#events").appendChild(newEventInput());
+}
+else forEach(events, function(element) {
+  document.querySelector("#events").appendChild(newEventInput(element));
+});
+
+if(events.length > 2)
+  show(document.querySelectorAll("#form .close"));
+else
+  hide(document.querySelectorAll("#form .close"));
+
+controller(events);
+
+var currentIntervalId;
+
+document.addEventListener("timerStarted", function(e) {
+  if(typeof currentIntervalId !== "undefined")
+    clearInterval(currentIntervalId);
+  currentIntervalId = e.detail.newIntervalId;
+});
+
+
 document.querySelector("#form").addEventListener("submit", function(e) {
   e.preventDefault();
 
-  events = [];
+  var events = [];
 
   forEach(document.querySelectorAll("#events input"), function(element) {
     events.push(element.value);
@@ -318,45 +350,43 @@ document.querySelector("#form").addEventListener("submit", function(e) {
     return "e=" + encodeURIComponent(element);
   }).join("&"));
 
-  controller();
-
+  controller(events);
 });
 
 window.addEventListener("popstate", function (e) {
   if(e.state === null)
     return;
 
-  events = e.state.events;
+  removeAllChildren(document.querySelector("#events"));
 
-  controller();
+  // Create the inputs
+  if(events.length < 2) {
+    document.querySelector("#events").appendChild(newEventInput());
+    document.querySelector("#events").appendChild(newEventInput());
+  }
+  else forEach(events, function(element) {
+    document.querySelector("#events").appendChild(newEvent(element));
+  });
 
+  if(events.length > 2)
+    show(document.querySelectorAll("#form .close"));
+  else
+    hide(document.querySelectorAll("#form .close"));
+
+  controller(e.state.events);
 });
 
-/**
- * Displays a non-visible HTML element
- *
- * @param {Element} element The HTML element to show
- */
-function show(element) {
-  element.classList.remove("hidden");
-}
-
-/**
- * Hides an HTML element
- *
- * @param {Element} element The HTML element to show
- */
-function hide(element) {
-  element.classList.add("hidden");
-}
-
 document.querySelector("#addEvent").addEventListener("click", function(e) {
-  newEvent();
-
-  if (document.querySelector("#events").children.length > 2)
-    forEach(document.querySelectorAll("#form .close"), function(element) {
-      show(element);
-    });
-
   e.preventDefault();
+  document.querySelector("#events").appendChild(newEventInput());
+  show(document.querySelectorAll("#form .close"));
+});
+
+document.addEventListener("eventDeleted", function() {
+  forEach(document.querySelectorAll("#form label"), function(element, index) {
+    element.textContent = index + 1;
+  });
+
+  if (document.querySelector("#events").children.length <= 2)
+    hide(document.querySelectorAll("#form .close"));
 });
