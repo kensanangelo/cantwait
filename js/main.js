@@ -62,13 +62,16 @@ function round(value, exp) {
   return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
 }
 
-function computeProgressBar(ratio) {
+/**
+ *
+ */
+function updateProgressBar(ratio) {
   ratio = Math.min(Math.max(0.0, ratio), 1.0);
 
   var progress    = document.querySelector("#output .progress"),
       progressBar = document.querySelector("#output .progress-bar"),
       value = round(100 * ratio, 2);
-  document.querySelector("#output .value").innerHTML =  value + " %";
+  document.querySelector("#output .value").innerHTML =  value + "%";
   progressBar.style.width = (100 * ratio) + "%";
   progressBar.setAttribute("aria-valuenow", value);
 
@@ -84,28 +87,27 @@ function computeProgressBar(ratio) {
 
 function playTimers(dateEvents) {
   function loop() {
-    var currentTime = new Date();
+    var counterElement = document.querySelector("#output .alert"),
+        currentTime = new Date(), // Now
+        ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]),
+        counters = [];
 
-    var ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
-    computeProgressBar(ratio);
+    updateProgressBar(ratio);
 
-    var counters = [];
     forEach(dateEvents, function(element, index) {
       counters.push(render(currentTime >= element ? "pastEvent" : "futureEvent", {
         index: index + 1,
         time: prettyPrintDelta(round(Math.abs(currentTime - element) / 1000))
       }));
     });
-    removeAllChildren(document.querySelector("#output .alert"));
-    document.querySelector("#output .alert").appendChild(buildList(counters));
-
-    var alertClasses = document.querySelector("#output .alert").classList;
+    removeAllChildren(counterElement);
+    counterElement.appendChild(buildList(counters));
 
     forEach(["alert-warning", "alert-success", "alert-info"], function(element) {
-      alertClasses.remove(element);
+      counterElement.classList.remove(element);
     });
 
-    alertClasses.add(
+    counterElement.classList.add(
       ratio <  0.0 ? "alert-warning" :
       ratio >= 1.0 ? "alert-success" :
                      "alert-info"
