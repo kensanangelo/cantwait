@@ -1,27 +1,4 @@
 /**
- * Transforms a number of seconds into a human-readable (if this human reads English) string.
- * It will show weeks, days, minutes and seconds in a way the the first unit will not be a zero
- *
- * @param   {Number} delta  The number of seconds to compute
- * @returns {String}        The human-readable string
- */
-function prettyPrintDelta(delta) {
-  var weeks   = Math.floor(delta / 604800),
-      days    = Math.floor(delta / 86400) % 7,
-      hours   = Math.floor(delta / 3600) % 24,
-      minutes = Math.floor(delta / 60) % 60,
-      seconds = delta % 60;
-
-  var output = "";
-  if(delta >= 604800) output += weeks   + " week"   + (weeks != 1 ? 's' : '')   + ', ';
-  if(delta >= 86400)  output += days    + " day"    + (days != 1 ? 's' : '')    + ', ';
-  if(delta >= 3600)   output += hours   + " hour"   + (hours != 1 ? 's' : '')   + ', ';
-  if(delta >= 60)     output += minutes + " minute" + (minutes != 1 ? 's' : '') + ' and ';
-                      output += seconds + " second" + (seconds != 1 ? 's' : '');
-  return output;
-}
-
-/**
  *
  */
 function updateProgressBar(ratio) {
@@ -95,54 +72,6 @@ function render(templateId, data) {
     template = template.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
   return template;
 }
-
-/**
- * Generate a random identifier, random enough to be considered as unique.
- *
- * @returns {Number}  A random string (16 alphanumerical characters)
- */
-function generateId() {
-  return Math.random().toString(36).substr(2, 16);
-}
-
-/**
- * Displays a non-visible HTML element
- *
- * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to show
- */
-function show(elements) {
-  if(typeof elements.length === "undefined")
-    elements.classList.remove("hidden");
-  else
-    forEach(elements, function(element) {
-      element.classList.remove("hidden");
-    });
-}
-
-/**
- * Hides an HTML element
- *
- * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to hide
- */
-function hide(elements) {
-  if(typeof elements.length === "undefined")
-    elements.classList.add("hidden");
-  else
-    forEach(elements, function(element) {
-      element.classList.add("hidden");
-    });
-}
-
-/**
- * Removes all children ofa given HTML element
- *
- * @param {Element} element  The element to empty
- */
-function removeAllChildren(element) {
-  while(element.firstChild)
-    element.removeChild(element.firstChild);
-}
-
 
 function newEventInput(value, index, showCloseBtn) {
   var eventElement = stringToElement(render("input", {
