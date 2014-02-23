@@ -1,3 +1,30 @@
+// COLLECTION HELPERS
+// ------------------
+
+/**
+ * Generic usage of Array.prototype.forEach that can also be used on NodeList elements.
+ *
+ * @param {(*[]|NodeList)} elements  The elements to be processed
+ * @param {}               callback  Function to execute for each element
+ */
+function forEach(elements, callback) {
+  [].forEach.call(elements, callback);
+}
+
+/**
+ * Generic usage of Array.prototype.map that can also be used on NodeList elements.
+ *
+ * @param {(*[]|NodeList)} elements  The elements to be processed
+ * @param {}               callback  Function to execute for each element
+ * @return *[]                       The mapped array
+ */
+function map(elements, callback) {
+  return [].map.call(elements, callback);
+}
+
+// MATH HELPERS
+// ------------
+
 /**
  * Decimal adjustment of a number.
  * Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
@@ -27,25 +54,57 @@ function round(value, exp) {
   return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
 }
 
+// STRING HELPERS
+// --------------
+
 /**
- * Generic usage of Array.prototype.forEach that can also be used on NodeList elements.
+ * Generate a random identifier, random enough to be considered as unique.
  *
- * @param {(*[]|NodeList)} elements  The elements to be processed
- * @param {}               callback  Function to execute for each element
+ * @returns {String}  A random string (16 alphanumerical characters)
  */
-function forEach(elements, callback) {
-  [].forEach.call(elements, callback);
+function generateRandomString() {
+  return Math.random().toString(36).substr(2, 8);
+}
+
+// DOM HELPERS
+// -----------
+
+/**
+ * Displays a non-visible HTML element (mutable function)
+ *
+ * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to show
+ */
+function show(elements) {
+  if(typeof elements.length === "undefined")
+    elements.classList.remove("hidden");
+  else
+    forEach(elements, function(element) {
+      show(element);
+    });
 }
 
 /**
- * Generic usage of Array.prototype.map that can also be used on NodeList elements.
+ * Hides an HTML element (mutable function)
  *
- * @param {(*[]|NodeList)} elements  The elements to be processed
- * @param {}               callback  Function to execute for each element
- * @return *[]                       The mapped array
+ * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to hide
  */
-function map(elements, callback) {
-  return [].map.call(elements, callback);
+function hide(elements) {
+  if(typeof elements.length === "undefined")
+    elements.classList.add("hidden");
+  else
+    forEach(elements, function(element) {
+      element.classList.add("hidden");
+    });
+}
+
+/**
+ * Removes all children ofa given HTML element (mutable function)
+ *
+ * @param {Element} element  The element to empty
+ */
+function removeAllChildren(element) {
+  while(element.firstChild)
+    element.removeChild(element.firstChild);
 }
 
 /**
@@ -72,6 +131,34 @@ function buildList(array) {
   }, "") + "</ul>");
 }
 
+// TEMPLATING SYSTEM
+// -----------------
+
+/**
+ * Returns a template based on his Id
+ * @param   {String} templateId  The name that will be used to fetch the template content from the HTML markup
+ * @returns {String}             The unrendered template
+ */
+function getTemplate(templateId) {
+  return document.querySelector("script#template-" + templateId).textContent;
+}
+
+/**
+ * Renders a set of data inside a template
+ *
+ * @param   {String} template  The unrendered template
+ * @param   {Object} data      The set of data to be used. Keys must exist with format {{key}} to be used in the template
+ * @returns {String}           The template after rendering the data
+ */
+function render(template, data) {
+  for (var key in data)
+    template = template.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
+  return template;
+}
+
+// CANTWAIT FUNCTIONS
+// ------------------
+
 /**
  * Transforms a number of seconds into a human-readable (if this human reads English) string.
  * It will show weeks, days, minutes and seconds in a way the the first unit will not be a zero
@@ -95,49 +182,22 @@ function prettyPrintDelta(delta) {
   return output;
 }
 
-/**
- * Generate a random identifier, random enough to be considered as unique.
- *
- * @returns {String}  A random string (16 alphanumerical characters)
- */
-function generateId() {
-  return Math.random().toString(36).substr(2, 8);
-}
 
-/**
- * Displays a non-visible HTML element
- *
- * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to show
- */
-function show(elements) {
-  if(typeof elements.length === "undefined")
-    elements.classList.remove("hidden");
-  else
-    forEach(elements, function(element) {
-      show(element);
-    });
-}
+function newEventInput(value, index, showCloseBtn) {
+  var eventElement = stringToElement(render(getTemplate("input"), {
+    id: generateRandomString(),
+    index: index,
+    value: value
+  }));
 
-/**
- * Hides an HTML element
- *
- * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to hide
- */
-function hide(elements) {
-  if(typeof elements.length === "undefined")
-    elements.classList.add("hidden");
-  else
-    forEach(elements, function(element) {
-      element.classList.add("hidden");
-    });
-}
+  eventElement.querySelector(".close").addEventListener("click", function (evt) {
+    evt.preventDefault();
+    eventElement.remove();
+    document.dispatchEvent(new Event("eventDeleted"));
+  });
 
-/**
- * Removes all children ofa given HTML element
- *
- * @param {Element} element  The element to empty
- */
-function removeAllChildren(element) {
-  while(element.firstChild)
-    element.removeChild(element.firstChild);
+  if(!showCloseBtn)
+    hide(eventElement.querySelector(".close"));
+
+  return eventElement;
 }

@@ -30,7 +30,7 @@ function playTimers(dateEvents) {
 
     updateProgressBar(ratio);
 
-    forEach(dateEvents, function(element, index) {
+    forEach(dateEvents, function (element, index) {
       counters.push(render(currentTime >= element ? "pastEvent" : "futureEvent", {
         index: index + 1,
         time: prettyPrintDelta(round(Math.abs(currentTime - element) / 1000))
@@ -39,7 +39,7 @@ function playTimers(dateEvents) {
     removeAllChildren(counterElement);
     counterElement.appendChild(buildList(counters));
 
-    forEach(["alert-warning", "alert-success", "alert-info"], function(element) {
+    forEach(["alert-warning", "alert-success", "alert-info"], function (element) {
       counterElement.classList.remove(element);
     });
 
@@ -59,45 +59,12 @@ function playTimers(dateEvents) {
   }));
 }
 
-/**
- * Renders a set of data inside a template
- *
- * @param   {String} templateId  The name that will be used to fetch the template content from the HTML markup
- * @param   {Object} data        The set of data to be used. Keys must exist with format {{key}} to be used in the template
- * @returns {String}             The template after rendering the data
- */
-function render(templateId, data) {
-  var template = document.querySelector("#template-" + templateId).textContent;
-  for (var key in data)
-    template = template.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
-  return template;
-}
-
-function newEventInput(value, index, showCloseBtn) {
-  var eventElement = stringToElement(render("input", {
-    id: generateId(),
-    index: index,
-    value: value
-  }));
-
-  eventElement.querySelector(".close").addEventListener("click", function(evt) {
-    evt.preventDefault();
-    eventElement.remove();
-    document.dispatchEvent(new Event("eventDeleted"));
-  });
-
-  if(!showCloseBtn)
-    hide(eventElement.querySelector(".close"));
-
-  return eventElement;
-}
-
 function createEventInputs(strings) {
   if(strings.length < 2)
     return [].push(newEventInput("", 1, false))
              .push(newEventInput("", 2, false));
   else
-    return map(strings, function(element, index) {
+    return map(strings, function (element, index) {
       return newEventInput(element, index + 1, strings.length > 2);
     });
 }
@@ -118,7 +85,7 @@ function controller(events) {
   hide(outputElement);
 
 
-  forEach(document.querySelectorAll("#events .form-group"), function(element) {
+  forEach(document.querySelectorAll("#events .form-group"), function (element) {
     element.classList.remove("has-error");
   });
 
@@ -145,7 +112,7 @@ function controller(events) {
   }
 
   // Creates the circled markers above the progress bar
-  forEach(dateEvents, function(element, index, array) {
+  forEach(dateEvents, function (element, index, array) {
     var newMarker = stringToElement(render("marker", {
       index: index + 1,
       left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
@@ -169,23 +136,23 @@ function controller(events) {
 // --------------
 
 // Stops the previous timer when a new one is started
-document.addEventListener("timerStarted", function(e) {
+document.addEventListener("timerStarted", function (e) {
   if(typeof currentIntervalId !== "undefined")
     clearInterval(currentIntervalId);
   currentIntervalId = e.detail.newIntervalId;
 });
 
 // The user submitted the form for computation
-document.querySelector("#form").addEventListener("submit", function(e) {
+document.querySelector("#form").addEventListener("submit", function (e) {
   e.preventDefault();
 
-  var events = map(document.querySelectorAll("#events input"), function(element) {
+  var events = map(document.querySelectorAll("#events input"), function (element) {
     return element.value;
   });
 
   history.pushState({
     events: events
-  }, document.title, "?" + map(events, function(element) {
+  }, document.title, "?" + map(events, function (element) {
     return "e=" + encodeURIComponent(element);
   }).join("&"));
 
@@ -209,7 +176,7 @@ window.addEventListener("popstate", function (e) {
 });
 
 // The user requested the addition of a new event input to the form
-document.querySelector("#addEvent").addEventListener("click", function(e) {
+document.querySelector("#addEvent").addEventListener("click", function (e) {
   e.preventDefault();
   document.querySelector("#events").appendChild(newEventInput(
     "",
@@ -220,8 +187,8 @@ document.querySelector("#addEvent").addEventListener("click", function(e) {
 });
 
 // The user deleted an event input from the form
-document.addEventListener("eventDeleted", function() {
-  forEach(document.querySelectorAll("#form label"), function(element, index) {
+document.addEventListener("eventDeleted", function () {
+  forEach(document.querySelectorAll("#form label"), function (element, index) {
     element.textContent = index + 1;
   });
 
