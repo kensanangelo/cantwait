@@ -72,7 +72,7 @@ function generateRandomString() {
 /**
  * Displays a non-visible HTML element (mutable function)
  *
- * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to show
+ * @param {(HTMLElement|HTMLElement[]|NodeList)} elements  The HTML element(s) to show
  */
 function show(elements) {
   if(typeof elements.length === "undefined")
@@ -86,7 +86,7 @@ function show(elements) {
 /**
  * Hides an HTML element (mutable function)
  *
- * @param {(Element|Element[]|NodeList)} elements  The HTML element(s) to hide
+ * @param {(HTMLElement|HTMLElement[]|NodeList)} elements  The HTML element(s) to hide
  */
 function hide(elements) {
   if(typeof elements.length === "undefined")
@@ -100,7 +100,7 @@ function hide(elements) {
 /**
  * Removes all children ofa given HTML element (mutable function)
  *
- * @param {Element} element  The element to empty
+ * @param {HTMLElement} element  The element to empty
  */
 function removeAllChildren(element) {
   while(element.firstChild)
@@ -111,7 +111,7 @@ function removeAllChildren(element) {
  * Transforms a string-based HTML element into a native HTML element where DOM API applies
  *
  * @param   {String}  str  A string containing an HTML element
- * @returns {Element}      An HTML element
+ * @returns {HTMLElement}      An HTML element
  */
 function stringToElement(str) {
   var div = document.createElement('div');
@@ -123,7 +123,7 @@ function stringToElement(str) {
  * Build a HTML <ul> list for each string of an array
  *
  * @param   {String[]} array  The elements to be used
- * @returns {Element}         The built <ul> list
+ * @returns {HTMLElement}         The built <ul> list
  */
 function buildList(array) {
   return stringToElement("<ul>" + array.reduce(function(previousValue, currentValue, index, array){
@@ -140,7 +140,7 @@ function buildList(array) {
  * @returns {String}             The unrendered template
  */
 function getTemplate(templateId) {
-  return document.querySelector("script#template-" + templateId).textContent;
+  return templates[templateId];
 }
 
 /**
@@ -182,7 +182,14 @@ function prettyPrintDelta(delta) {
   return output;
 }
 
-
+/**
+ * Returns an event input along with its label and "Delete event" button (if requested)
+ *
+ * @param   {String}  value         The input value
+ * @param   {Number}  index         The label index
+ * @param   {Boolean} showCloseBtn  Shows the "Delete event" button if true, hides it otherwise
+ * @returns {HTMLElement}           The entire HTML element
+ */
 function newEventInput(value, index, showCloseBtn) {
   var eventElement = stringToElement(render(getTemplate("input"), {
     id: generateRandomString(),

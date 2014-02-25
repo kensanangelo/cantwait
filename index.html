@@ -54,32 +54,7 @@
       </footer>
     </div>
 
-    <script type="text/template" id="template-input">
-      <div class="form-group">
-        <label for="event-{{id}}" class="control-label circle">{{index}}</label>
-        <input type="datetime" class="form-control" id="event-{{id}}" name="e" value="{{value}}" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">
-        <button type="button" class="close delete-event" aria-hidden="true">&times;</button>
-      </div>
-    </script>
-
-    <script type="text/template" id="template-marker">
-      <span class="circle" style="left: {{left}}">{{index}}</span>
-    </script>
-
-    <script type="text/template" id="template-invalidEvent">
-      <span class="circle">{{index}}</span> is invalid.
-    </script>
-    <script type="text/template" id="template-predatedEvent">
-      <span class="circle">{{index1}}</span> must happen before <span class="circle">{{index2}}</span>.
-    </script>
-
-    <script type="text/template" id="template-pastEvent">
-      <span class="circle">{{index}}</span> happened {{time}} ago.
-    </script>
-    <script type="text/template" id="template-futureEvent">
-      <span class="circle">{{index}}</span> will happen in {{time}}.
-    </script>
-
+    <script src="js/templates.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>

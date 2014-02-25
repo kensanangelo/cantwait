@@ -163,7 +163,7 @@ describe("removeAllChildren()", function () {
 describe("stringToElement()", function () {
   it("should return an HTML element", function () {
     expect(stringToElement("<div>")).to.be.an("object");
-    expect(stringToElement("<div>")).to.be.an.instanceof(HTMLDivElement);
+    expect(stringToElement("<div>")).to.be.an.instanceof(HTMLElement);
   });
 
   it("should create children", function () {
@@ -193,16 +193,12 @@ describe("buildList()", function () {
 // -----------------
 
 describe("getTemplate()", function () {
-  var script, div;
-
   before(function () {
-    script = document.querySelector("body").appendChild(stringToElement("<script type=text/template id=template-dummytemplate>Dummy template</script>"));
-    div = document.querySelector("body").appendChild(stringToElement("<div id=template-notatemplate>Some div</div>"));
+    templates.dummytemplate = "Dummy template";
   });
 
   after(function () {
-    document.querySelector("body").removeChild(script);
-    document.querySelector("body").removeChild(div);
+    delete templates.dummytemplate;
   });
 
   it("should return a string", function () {
@@ -214,15 +210,11 @@ describe("getTemplate()", function () {
   });
 
   it("should handle inexisting template", function () {
-    expect(function () { getTemplate("unknowntemplate"); }).to.throw(TypeError);
-  });
-
-  it("should handle inexisting template", function () {
-    expect(function () { getTemplate("notatemplate"); }).to.throw(TypeError);
+    expect(getTemplate("unknowntemplate")).to.be.undefined;
   });
 
   it("should handle missing argument", function () {
-    expect(function () { getTemplate(); }).to.throw(TypeError);
+    expect(getTemplate()).to.be.undefined;
   });
 });
 
@@ -273,25 +265,18 @@ describe("prettyPrintDelta()", function () {
 });
 
 describe("newEventInput()", function () {
-  var template;
-
-  before(function () {
-    template = document.querySelector("body").appendChild(stringToElement(
-      '<script type="text/template" id="template-input">' +
-        '<div class="form-group">' +
-          '<label for="event-{{id}}" class="control-label circle">{{index}}</label>' +
-          '<input type="datetime" class="form-control" id="event-{{id}}" name="e" value="{{value}}" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">' +
-          '<button type="button" class="close delete-event" aria-hidden="true">&times;</button>' +
-        '</div>' +
-      '</script>'
-    ));
-  });
-
-  after(function () {
-    document.querySelector("body").removeChild(template);
-  });
-
-  it("should return an HTML element", function () {
+  it("should return a div element", function () {
     expect(newEventInput(0, 0, true)).to.be.an('object');
+    expect(newEventInput(0, 0, true)).to.be.an.instanceof(HTMLDivElement);
+  });
+
+  it("should show the close button when third argument is true", function () {
+    var div = newEventInput(0, 0, true);
+    expect(div.querySelector(".close").className).to.not.contain("hidden");
+  });
+
+  it("should hide the close button when third argument is false", function () {
+    var div = newEventInput(0, 0, false);
+    expect(div.querySelector(".close").className).to.contain("hidden");
   });
 });
