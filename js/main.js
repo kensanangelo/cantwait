@@ -31,7 +31,7 @@ function playTimers(dateEvents) {
     updateProgressBar(ratio);
 
     forEach(dateEvents, function (element, index) {
-      counters.push(render(currentTime >= element ? "pastEvent" : "futureEvent", {
+      counters.push(render(getTemplate(currentTime >= element ? "pastEvent" : "futureEvent"), {
         index: index + 1,
         time: prettyPrintDelta(round(Math.abs(currentTime - element) / 1000))
       }));
@@ -83,7 +83,7 @@ function controller(events) {
   for (var i = 0; i < dateEvents.length; i++) {
     if (isNaN(dateEvents[i])) {
       document.querySelector("#events .form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-      errors.push(render("invalidEvent", {
+      errors.push(render(getTemplate("invalidEvent"), {
         index: i + 1
       }));
     }
@@ -94,7 +94,7 @@ function controller(events) {
     if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
       document.querySelector("#events .form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
       document.querySelector("#events .form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
-      errors.push(render("predatedEvent", {
+      errors.push(render(getTemplate("predatedEvent"), {
         index1: i + 1,
         index2: i + 2
       }));
@@ -103,7 +103,7 @@ function controller(events) {
 
   // Creates the circled markers above the progress bar
   forEach(dateEvents, function (element, index, array) {
-    var newMarker = stringToElement(render("marker", {
+    var newMarker = stringToElement(render(getTemplate("marker"), {
       index: index + 1,
       left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
     }));
