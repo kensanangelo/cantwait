@@ -59,16 +59,6 @@ function playTimers(dateEvents) {
   }));
 }
 
-function createEventInputs(strings) {
-  if(strings.length < 2)
-    return [].push(newEventInput("", 1, false))
-             .push(newEventInput("", 2, false));
-  else
-    return map(strings, function (element, index) {
-      return newEventInput(element, index + 1, strings.length > 2);
-    });
-}
-
 function controller(events) {
   var dateEvents = map(events, Date.parse);
 

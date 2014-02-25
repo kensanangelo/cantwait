@@ -290,3 +290,62 @@ describe("newEventInput()", function () {
     expect(div.querySelector("label").textContent).to.equal("42");
   });
 });
+
+
+describe("createEventInputs()", function () {
+  it("should return 2 empty elements when 0 dates are given in argument", function () {
+    var inputs = createEventInputs([]);
+    expect(inputs).to.be.an("array").and.to.have.length(2);
+    expect(inputs[0]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[1]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[0].querySelector("label").textContent).to.equal("1");
+    expect(inputs[1].querySelector("label").textContent).to.equal("2");
+    expect(inputs[0].querySelector("input").value).to.be.empty;
+    expect(inputs[1].querySelector("input").value).to.be.empty;
+    expect(inputs[0].querySelector(".close").className).to.contain("hidden");
+    expect(inputs[1].querySelector(".close").className).to.contain("hidden");
+  });
+
+  it("should return 2 empty elements when 1 date is given in argument", function () {
+    var inputs = createEventInputs(["1988-10-08"]);
+    expect(inputs).to.be.an("array").and.to.have.length(2);
+    expect(inputs[0]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[1]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[0].querySelector("label").textContent).to.equal("1");
+    expect(inputs[1].querySelector("label").textContent).to.equal("2");
+    expect(inputs[0].querySelector("input").value).to.be.empty;
+    expect(inputs[1].querySelector("input").value).to.be.empty;
+    expect(inputs[0].querySelector(".close").className).to.contain("hidden");
+    expect(inputs[1].querySelector(".close").className).to.contain("hidden");
+  });
+
+  it("should return 2 filled elements when 2 dates are given in argument", function () {
+    var inputs = createEventInputs(["1988-10-08", "2014-02-24"]);
+    expect(inputs).to.be.an("array").and.to.have.length(2);
+    expect(inputs[0]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[1]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[0].querySelector("label").textContent).to.equal("1");
+    expect(inputs[1].querySelector("label").textContent).to.equal("2");
+    expect(inputs[0].querySelector("input").value).to.equal("1988-10-08");
+    expect(inputs[1].querySelector("input").value).to.equal("2014-02-24");
+    expect(inputs[0].querySelector(".close").className).to.contain("hidden");
+    expect(inputs[1].querySelector(".close").className).to.contain("hidden");
+  });
+
+  it("should return 2 filled elements with delete buttons displayed when 3 dates are given in argument", function () {
+    var inputs = createEventInputs(["1988-10-08", "2014-02-24", "2015-01-01"]);
+    expect(inputs).to.be.an("array").and.to.have.length(3);
+    expect(inputs[0]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[1]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[2]).to.be.an.instanceof(HTMLElement);
+    expect(inputs[0].querySelector("label").textContent).to.equal("1");
+    expect(inputs[1].querySelector("label").textContent).to.equal("2");
+    expect(inputs[2].querySelector("label").textContent).to.equal("3");
+    expect(inputs[0].querySelector("input").value).to.equal("1988-10-08");
+    expect(inputs[1].querySelector("input").value).to.equal("2014-02-24");
+    expect(inputs[2].querySelector("input").value).to.equal("2015-01-01");
+    expect(inputs[0].querySelector(".close").className).to.not.contain("hidden");
+    expect(inputs[1].querySelector(".close").className).to.not.contain("hidden");
+    expect(inputs[2].querySelector(".close").className).to.not.contain("hidden");
+  });
+});

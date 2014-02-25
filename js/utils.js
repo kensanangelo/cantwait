@@ -188,7 +188,7 @@ function prettyPrintDelta(delta) {
  * @param   {String}  value         The input value
  * @param   {Number}  index         The label index
  * @param   {Boolean} showCloseBtn  Shows the "Delete event" button if true, hides it otherwise
- * @returns {HTMLElement}           The entire HTML element
+ * @returns {HTMLElement}           The entire HTML element containing label, input and delete button
  */
 function newEventInput(value, index, showCloseBtn) {
   var eventElement = stringToElement(render(getTemplate("input"), {
@@ -207,4 +207,21 @@ function newEventInput(value, index, showCloseBtn) {
     hide(eventElement.querySelector(".close"));
 
   return eventElement;
+}
+
+/**
+ * Creates one event input for each date string given in the array argument.
+ * If there is less than 2 strings given, 2 empty inputs are returned.
+ *
+ * @param   {String[]} strings  The dates to be parsed
+ * @returns {HTMLElement[]}     An array of event inputs
+ */
+function createEventInputs(strings) {
+  if(strings.length < 2)
+    return [newEventInput("", 1, false),
+            newEventInput("", 2, false)];
+  else
+    return map(strings, function (element, index) {
+      return newEventInput(element, index + 1, strings.length > 2);
+    });
 }
