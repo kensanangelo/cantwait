@@ -266,17 +266,27 @@ describe("prettyPrintDelta()", function () {
 
 describe("newEventInput()", function () {
   it("should return a div element", function () {
-    expect(newEventInput(0, 0, true)).to.be.an('object');
-    expect(newEventInput(0, 0, true)).to.be.an.instanceof(HTMLDivElement);
+    expect(newEventInput("", 0, true)).to.be.an('object');
+    expect(newEventInput("", 0, true)).to.be.an.instanceof(HTMLDivElement);
   });
 
   it("should show the close button when third argument is true", function () {
-    var div = newEventInput(0, 0, true);
+    var div = newEventInput("", 0, true);
     expect(div.querySelector(".close").className).to.not.contain("hidden");
   });
 
   it("should hide the close button when third argument is false", function () {
-    var div = newEventInput(0, 0, false);
+    var div = newEventInput("", 0, false);
     expect(div.querySelector(".close").className).to.contain("hidden");
+  });
+
+  it("should fill the input element", function () {
+    var div = newEventInput("1988-10-08", 0, true);
+    expect(div.querySelector("input").value).to.equal("1988-10-08");
+  });
+
+  it("should fill the label element", function () {
+    var div = newEventInput("", 42, true);
+    expect(div.querySelector("label").textContent).to.equal("42");
   });
 });
