@@ -343,4 +343,53 @@ describe("Cantwait functions", function () {
       expect(inputs[2].querySelector(".close").className).to.not.contain("hidden");
     });
   });
+
+  describe("updateProgressBar()", function () {
+    var progress = stringToElement('<div class="progress"><div class="progress-bar"></div><div class="value"></div></div>');
+
+    it("should have a half bar active", function () {
+      updateProgressBar(progress, 0.5);
+
+      expect(progress.querySelector(".progress-bar").style.width).to.equal("50%");
+      expect(progress.querySelector(".progress-bar").getAttribute("aria-valuenow")).to.equal("50");
+      expect(progress.querySelector(".value").textContent).to.equal("50%");
+      expect(progress.className).to.contain("active");
+    });
+
+    it("should have a 0% bar inactive", function () {
+      updateProgressBar(progress, 0);
+
+      expect(progress.querySelector(".progress-bar").style.width).to.equal("0%");
+      expect(progress.querySelector(".progress-bar").getAttribute("aria-valuenow")).to.equal("0");
+      expect(progress.querySelector(".value").textContent).to.equal("0%");
+      expect(progress.className).to.not.contain("active");
+    });
+
+    it("should have a 100% bar inactive", function () {
+      updateProgressBar(progress, 1);
+
+      expect(progress.querySelector(".progress-bar").style.width).to.equal("100%");
+      expect(progress.querySelector(".progress-bar").getAttribute("aria-valuenow")).to.equal("100");
+      expect(progress.querySelector(".value").textContent).to.equal("100%");
+      expect(progress.className).to.not.contain("active");
+    });
+
+    it("should not go under 0%", function () {
+      updateProgressBar(progress, -1);
+
+      expect(progress.querySelector(".progress-bar").style.width).to.equal("0%");
+      expect(progress.querySelector(".progress-bar").getAttribute("aria-valuenow")).to.equal("0");
+      expect(progress.querySelector(".value").textContent).to.equal("0%");
+      expect(progress.className).to.not.contain("active");
+    });
+
+    it("should not go above 100%", function () {
+      updateProgressBar(progress, 2);
+
+      expect(progress.querySelector(".progress-bar").style.width).to.equal("100%");
+      expect(progress.querySelector(".progress-bar").getAttribute("aria-valuenow")).to.equal("100");
+      expect(progress.querySelector(".value").textContent).to.equal("100%");
+      expect(progress.className).to.not.contain("active");
+    });
+  });
 });

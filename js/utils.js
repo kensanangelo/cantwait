@@ -225,3 +225,30 @@ function createEventInputs(strings) {
       return newEventInput(element, index + 1, strings.length > 2);
     });
 }
+
+/**
+ * Set a progress bar element attributes depending on the given value (mutable function)
+ *
+ * @param {HTMLElement} progress  The progress bar container to modify
+ * @param {Number}      ratio     The value to be applied to the progress bar
+ */
+function updateProgressBar(progress, ratio) {
+  ratio = Math.min(Math.max(0.0, ratio), 1.0);
+
+  var bar = progress.querySelector(".progress-bar"),
+      value = progress.querySelector(".value"),
+      percentage = round(100 * ratio, 2);
+
+  value.textContent =  percentage + "%";
+  bar.style.width = (100 * ratio) + "%";
+  bar.setAttribute("aria-valuenow", percentage);
+
+  if(ratio === 0 || ratio === 1.0) {
+    progress.classList.remove("active");
+    bar.classList.add("progress-bar-success");
+  }
+  else {
+    progress.classList.add("active");
+    bar.classList.remove("progress-bar-success");
+  }
+}

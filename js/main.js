@@ -1,25 +1,4 @@
-/**
- *
- */
-function updateProgressBar(ratio) {
-  ratio = Math.min(Math.max(0.0, ratio), 1.0);
 
-  var progress    = document.querySelector("#output .progress"),
-      progressBar = document.querySelector("#output .progress-bar"),
-      value = round(100 * ratio, 2);
-  document.querySelector("#output .value").innerHTML =  value + "%";
-  progressBar.style.width = (100 * ratio) + "%";
-  progressBar.setAttribute("aria-valuenow", value);
-
-  if(ratio === 1.0) {
-    progress.classList.remove("active");
-    progressBar.classList.add("progress-bar-success");
-  }
-  else {
-    progress.classList.add("active");
-    progressBar.classList.remove("progress-bar-success");
-  }
-}
 
 function playTimers(dateEvents) {
   function loop() {
@@ -28,7 +7,7 @@ function playTimers(dateEvents) {
         ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]),
         counters = [];
 
-    updateProgressBar(ratio);
+    updateProgressBar(document.querySelector(".progress"), ratio);
 
     forEach(dateEvents, function (element, index) {
       counters.push(render(getTemplate(currentTime >= element ? "pastEvent" : "futureEvent"), {
