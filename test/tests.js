@@ -392,4 +392,19 @@ describe("Cantwait functions", function () {
       expect(progress.className).to.not.contain("active");
     });
   });
+
+  describe("buildTimerList()", function () {
+    it("should compute a date between 2 dates", function () {
+      var list = buildTimerList([new Date("2013"), new Date("2015")], new Date("2014"));
+      expect(list.children).to.have.length(2);
+      expect(list.textContent).to.contain("1 happened 52 weeks, 1 day, 0 hours, 0 minutes and 0 seconds ago.");
+      expect(list.textContent).to.contain("2 will happen in 52 weeks, 1 day, 0 hours, 0 minutes and 0 seconds.");
+    });
+
+    it("should handle events happening now", function () {
+      var list = buildTimerList([new Date()], new Date());
+      expect(list.children).to.have.length(1);
+      expect(list.textContent).to.equal("1 happened 0 seconds ago.");
+    });
+  });
 });

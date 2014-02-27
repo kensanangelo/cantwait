@@ -122,8 +122,8 @@ function stringToElement(str) {
 /**
  * Build a HTML <ul> list for each string of an array
  *
- * @param   {String[]} array  The elements to be used
- * @returns {HTMLElement}         The built <ul> list
+ * @param   {String[]} array    The elements to be used
+ * @returns {HTMLUListElement}  The built <ul> list
  */
 function buildList(array) {
   return stringToElement("<ul>" + array.reduce(function(previousValue, currentValue, index, array){
@@ -251,4 +251,20 @@ function updateProgressBar(progress, ratio) {
     progress.classList.add("active");
     bar.classList.remove("progress-bar-success");
   }
+}
+
+/**
+ * Builds and returns strings indicating, for each event, the time spent or to be spent to reach a reference time
+ *
+ * @param   {Date[]} events     The list of events
+ * @param   {Date}   time       The reference time to compare with each event
+ * @returns {HTMLUListElement}  The list of computed timers
+ */
+function buildTimerList(events, time) {
+  return buildList(map(events, function (event, index) {
+    return render(getTemplate(time >= event ? "pastEvent" : "futureEvent"), {
+      index: index + 1,
+      time: prettyPrintDelta(round(Math.abs(time - event) / 1000))
+    });
+  }));
 }

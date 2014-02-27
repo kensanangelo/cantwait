@@ -9,14 +9,8 @@ function playTimers(dateEvents) {
 
     updateProgressBar(document.querySelector(".progress"), ratio);
 
-    forEach(dateEvents, function (element, index) {
-      counters.push(render(getTemplate(currentTime >= element ? "pastEvent" : "futureEvent"), {
-        index: index + 1,
-        time: prettyPrintDelta(round(Math.abs(currentTime - element) / 1000))
-      }));
-    });
     removeAllChildren(counterElement);
-    counterElement.appendChild(buildList(counters));
+    counterElement.appendChild(buildTimerList(dateEvents, currentTime));
 
     forEach(["alert-warning", "alert-success", "alert-info"], function (element) {
       counterElement.classList.remove(element);
