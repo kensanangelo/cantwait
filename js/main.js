@@ -7,7 +7,7 @@ function playTimers(dateEvents) {
         ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]),
         counters = [];
 
-    updateProgressBar(document.querySelector(".progress"), ratio);
+    updateProgressBar(document.querySelector("#output .progress"), ratio);
 
     removeAllChildren(counterElement);
     counterElement.appendChild(buildTimerList(dateEvents, currentTime));

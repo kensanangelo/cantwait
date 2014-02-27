@@ -173,15 +173,15 @@ describe("DOM helpers", function () {
 
   describe("buildList()", function () {
     it("should build a list from an array", function () {
-      expect(buildList(["a", "b", "c"])).to.be.an("object");
-      expect(buildList(["a", "b", "c"])).to.be.an.instanceof(HTMLUListElement)
-        .and.to.deep.equal(stringToElement("<ul><li>a</li><li>b</li><li>c</li></ul>"));
+      expect(buildList(["a", "b", "c"])).to.be.an.instanceof(HTMLUListElement);
+      expect(buildList(["a", "b", "c"]).children).to.have.length(3);
+      expect(buildList(["a", "b", "c"]).outerHTML).to.equal("<ul><li>a</li><li>b</li><li>c</li></ul>");
     });
 
     it("should handle empty arrays", function () {
-      expect(buildList([])).to.be.an("object");
-      expect(buildList([])).to.be.an.instanceof(HTMLUListElement)
-        .and.to.deep.equal(stringToElement("<ul></ul>"));
+      expect(buildList([])).to.be.an.instanceof(HTMLUListElement);
+      expect(buildList([]).children).to.have.length(0);
+      expect(buildList([]).outerHTML).to.deep.equal("<ul></ul>");
     });
   });
 });
