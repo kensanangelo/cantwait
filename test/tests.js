@@ -407,4 +407,69 @@ describe("Cantwait functions", function () {
       expect(list.textContent).to.equal("1 happened 0 seconds ago.");
     });
   });
+
+
+  describe('makeDateEvents()', function () {
+    it('should be an object with correct properties', function () {
+      var de = makeDateEvents(["1988"]);
+      expect(de).to.be.an("object");
+      expect(de).to.have.property("dateEvents").that.is.an("array");
+      expect(de).to.have.property("errors").that.is.an("object");
+      expect(de).to.have.deep.property("errors.indices").that.is.an("array");
+      expect(de).to.have.deep.property("errors.messages").that.is.an("array");
+    });
+
+    it('should handle empty arrays', function () {
+      var de = makeDateEvents([]);
+      expect(de.dateEvents).to.be.empty;
+      expect(de.errors.indices).to.be.empty;
+      expect(de.errors.messages).to.be.empty;
+    });
+
+    it('should create a DateEvent collection', function () {
+      var de = makeDateEvents(["1988", "2014"]);
+      expect(de.dateEvents).to.have.length(2);
+      expect(de.errors.indices).to.be.empty;
+      expect(de.errors.messages).to.be.empty;
+      expect(de.dateEvents[0].toString()).to.equal(new Date("1988").toString());
+      expect(de.dateEvents[1].toString()).to.equal(new Date("2014").toString());
+    });
+
+    it('should handle erroneous events', function () {
+      var de = makeDateEvents(["1988", "test"]);
+      expect(de.dateEvents).to.have.length(2);
+      expect(de.errors.indices).to.be.not.empty;
+      expect(de.errors.messages).to.be.not.empty;
+    });
+  });
+
+  describe('validate()', function () {
+    it('should handle a collection of valid dates', function () {
+      var errors = validate([new Date("1988"), new Date("2014")]);
+      expect(errors.indices).to.have.length(0);
+      expect(errors.messages).to.have.length(0);
+    });
+
+    it('should handle a collection of invalid dates', function () {
+      var errors = validate([new Date("1988"), new Date("test")]);
+      expect(errors.indices).to.deep.equal([1]);
+      expect(errors.messages[0]).to.match(/^.*2.* must be a valid date.$/);
+    });
+
+    it('should handle a collection of dates in wrong orger', function () {
+      var errors = validate([new Date("2014"), new Date("1988")]);
+      expect(errors.indices).to.deep.equal([0, 1]);
+      expect(errors.messages[0]).to.match(/^.*1.* must happen before .*2.*.$/);
+    });
+  });
+
+  describe('isValid()', function () {
+    it('should be true when a DateEvent collection is valid', function () {
+      expect(isValid(makeDateEvents(["2013", "2014"]))).to.be.true;
+    });
+
+    it('should be false when a DateEvent collection is invalid', function () {
+      expect(isValid(makeDateEvents(["2013", "test"]))).to.be.false;
+    });
+  });
 });

@@ -1,5 +1,4 @@
 
-
 function playTimers(dateEvents) {
   function loop() {
     var counterElement = document.querySelector("#output .alert"),
@@ -33,13 +32,10 @@ function playTimers(dateEvents) {
 }
 
 function controller(events) {
-  var dateEvents = map(events, Date.parse);
 
   var errorsElement  = document.querySelector("#errors"),
       markersElement = document.querySelector(".markers"),
       outputElement  = document.querySelector("#output");
-
-  var errors = [];
 
   removeAllChildren(markersElement);
   removeAllChildren(errorsElement);
@@ -47,51 +43,36 @@ function controller(events) {
   hide(errorsElement);
   hide(outputElement);
 
-
   forEach(document.querySelectorAll("#events .form-group"), function (element) {
     element.classList.remove("has-error");
   });
 
-  // Validates the date format
-  for (var i = 0; i < dateEvents.length; i++) {
-    if (isNaN(dateEvents[i])) {
-      document.querySelector("#events .form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-      errors.push(render(getTemplate("invalidEvent"), {
-        index: i + 1
-      }));
-    }
-  }
+  var dateEvents = makeDateEvents(events);
 
-  // Validates the order on dates
-  for (i = 0; i < dateEvents.length - 1; i++) {
-    if (!isNaN(dateEvents[i]) && !isNaN(dateEvents[i + 1]) && dateEvents[i] >= dateEvents[i + 1]) {
-      document.querySelector("#events .form-group:nth-child(" + (i + 1) + ")").classList.add("has-error");
-      document.querySelector("#events .form-group:nth-child(" + (i + 2) + ")").classList.add("has-error");
-      errors.push(render(getTemplate("predatedEvent"), {
-        index1: i + 1,
-        index2: i + 2
-      }));
-    }
-  }
-
-  // Creates the circled markers above the progress bar
-  forEach(dateEvents, function (element, index, array) {
-    var newMarker = stringToElement(render(getTemplate("marker"), {
-      index: index + 1,
-      left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
-    }));
-    markersElement.appendChild(newMarker);
-  });
-
-  if(errors.length !== 0) {
-    errorsElement.appendChild(buildList(errors));
+  if(!isValid(dateEvents)) {
+    errorsElement.appendChild(buildList(dateEvents.errors.messages));
+    forEach(dateEvents.errors.indices, function (index) {
+      document.querySelector("#events .form-group:nth-child(" + (index + 1) + ")").classList.add("has-error");
+    });
     show(errorsElement);
     hide(outputElement);
   }
+  else {
+    if(dateEvents.dateEvents.length >= 2) {
+      show(outputElement);
+      playTimers(dateEvents.dateEvents);
 
-  if(dateEvents.length >= 2 && errors.length === 0) {
-    show(outputElement);
-    playTimers(dateEvents);
+      hide(errorsElement);
+
+      // Creates the circled markers above the progress bar
+      forEach(dateEvents.dateEvents, function (element, index, array) {
+        var newMarker = stringToElement(render(getTemplate("marker"), {
+          index: index + 1,
+          left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
+        }));
+        markersElement.appendChild(newMarker);
+      });
+    }
   }
 }
 

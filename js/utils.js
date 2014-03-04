@@ -35,15 +35,17 @@ function map(elements, callback) {
  */
 function round(value, exp) {
   // If the exp is undefined or zero...
-  if (typeof exp === 'undefined' || +exp === 0)
+  if (typeof exp === 'undefined' || +exp === 0) {
     return Math.round(value);
+  }
 
   value = +value;
   exp   = +exp;
 
   // If the value is not a number or the exp is not an integer...
-  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
+  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
     return NaN;
+  }
 
   // Shift
   value = value.toString().split('e');
@@ -75,12 +77,13 @@ function generateRandomString() {
  * @param {(HTMLElement|HTMLElement[]|NodeList)} elements  The HTML element(s) to show
  */
 function show(elements) {
-  if(typeof elements.length === "undefined")
+  if (typeof elements.length === "undefined") {
     elements.classList.remove("hidden");
-  else
-    forEach(elements, function(element) {
+  } else {
+    forEach(elements, function (element) {
       show(element);
     });
+  }
 }
 
 /**
@@ -89,12 +92,13 @@ function show(elements) {
  * @param {(HTMLElement|HTMLElement[]|NodeList)} elements  The HTML element(s) to hide
  */
 function hide(elements) {
-  if(typeof elements.length === "undefined")
+  if (typeof elements.length === "undefined") {
     elements.classList.add("hidden");
-  else
-    forEach(elements, function(element) {
+  } else {
+    forEach(elements, function (element) {
       element.classList.add("hidden");
     });
+  }
 }
 
 /**
@@ -103,8 +107,9 @@ function hide(elements) {
  * @param {HTMLElement} element  The element to empty
  */
 function removeAllChildren(element) {
-  while(element.firstChild)
+  while (element.firstChild) {
     element.removeChild(element.firstChild);
+  }
 }
 
 /**
@@ -126,7 +131,7 @@ function stringToElement(str) {
  * @returns {HTMLUListElement}  The built <ul> list
  */
 function buildList(array) {
-  return stringToElement("<ul>" + array.reduce(function(previousValue, currentValue, index, array){
+  return stringToElement("<ul>" + array.reduce(function (previousValue, currentValue) {
     return previousValue + "<li>" + currentValue + "</li>";
   }, "") + "</ul>");
 }
@@ -151,8 +156,10 @@ function getTemplate(templateId) {
  * @returns {String}           The template after rendering the data
  */
 function render(template, data) {
-  for (var key in data)
+  var key;
+  for (key in data) {
     template = template.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
+  }
   return template;
 }
 
@@ -174,11 +181,11 @@ function prettyPrintDelta(delta) {
       seconds = delta % 60;
 
   var output = "";
-  if(delta >= 604800) output += weeks   + " week"   + (weeks != 1 ? 's' : '')   + ', ';
-  if(delta >= 86400)  output += days    + " day"    + (days != 1 ? 's' : '')    + ', ';
-  if(delta >= 3600)   output += hours   + " hour"   + (hours != 1 ? 's' : '')   + ', ';
-  if(delta >= 60)     output += minutes + " minute" + (minutes != 1 ? 's' : '') + ' and ';
-                      output += seconds + " second" + (seconds != 1 ? 's' : '');
+  if (delta >= 604800) output += weeks   + " week"   + (weeks != 1 ? 's' : '')   + ', ';
+  if (delta >= 86400)  output += days    + " day"    + (days != 1 ? 's' : '')    + ', ';
+  if (delta >= 3600)   output += hours   + " hour"   + (hours != 1 ? 's' : '')   + ', ';
+  if (delta >= 60)     output += minutes + " minute" + (minutes != 1 ? 's' : '') + ' and ';
+                       output += seconds + " second" + (seconds != 1 ? 's' : '');
   return output;
 }
 
@@ -203,7 +210,7 @@ function newEventInput(value, index, showCloseBtn) {
     document.dispatchEvent(new Event("eventDeleted"));
   });
 
-  if(!showCloseBtn)
+  if (!showCloseBtn)
     hide(eventElement.querySelector(".close"));
 
   return eventElement;
@@ -217,9 +224,10 @@ function newEventInput(value, index, showCloseBtn) {
  * @returns {HTMLElement[]}     An array of event inputs
  */
 function createEventInputs(strings) {
-  if(strings.length < 2)
+  if (strings.length < 2) {
     return [newEventInput("", 1, false),
             newEventInput("", 2, false)];
+  }
   else
     return map(strings, function (element, index) {
       return newEventInput(element, index + 1, strings.length > 2);
@@ -243,7 +251,7 @@ function updateProgressBar(progress, ratio) {
   bar.style.width = (100 * ratio) + "%";
   bar.setAttribute("aria-valuenow", percentage);
 
-  if(ratio === 0 || ratio === 1.0) {
+  if (ratio === 0 || ratio === 1.0) {
     progress.classList.remove("active");
     bar.classList.add("progress-bar-success");
   }
@@ -267,4 +275,73 @@ function buildTimerList(events, time) {
       time: prettyPrintDelta(round(Math.abs(time - event) / 1000))
     });
   }));
+}
+
+/**
+ * Create a DateEvent collection and checks for input error
+ *
+ * @param   {String[]} events  The strings to create the DateEvents
+ * @returns {Object}           The collection of dates and the list of errors
+ */
+function makeDateEvents(events) {
+  var object = {};
+  object.dateEvents = map(events, function (str) {
+    return new Date(str);
+  });
+  object.errors = validate(object.dateEvents);
+  return object;
+}
+
+/**
+ * Create a DateEvent collection and checks for input error
+ *
+ * @param   {Date[]} dateEvents  The Date elements to check
+ * @returns {Object}             The list of error indices and messages
+ */
+function validate(dateEvents) {
+  var errors = {
+    indices: [],
+    messages: []
+  };
+
+  forEach(dateEvents, function (dateEvent, index) {
+    // Validates the date format
+    if (isNaN(dateEvent)) {
+      errors.indices.push(index);
+      errors.messages.push(render(getTemplate("invalidEvent"), {
+        index: index + 1
+      }));
+    }
+
+    // Avoiding going outside of the array boundaries
+    if (index === dateEvents.length - 1)
+      return;
+
+    // Validates the order on dates
+    if (!isNaN(dateEvent) && !isNaN(dateEvents[index + 1]) && dateEvent >= dateEvents[index + 1]) {
+      if (errors.indices.indexOf(index) === -1)
+        errors.indices.push(index);
+      if (errors.indices.indexOf(index + 1) === -1)
+        errors.indices.push(index + 1);
+      errors.messages.push(render(getTemplate("predatedEvent"), {
+        index1: index + 1,
+        index2: index + 2
+      }));
+    }
+  });
+
+  return errors;
+}
+
+/**
+ * Helper to check if a DateEvent collection is valid
+ *
+ * @param   {Object}   dateEvents  The collection to check
+ * @returns {Boolean}  true if the collection is valid, false otherwise
+ */
+function isValid(dateEvents) {
+  if(dateEvents.errors.indices.length === 0)
+    return true;
+  else
+    return false;
 }

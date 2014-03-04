@@ -7,7 +7,7 @@ var templates = {
 
     marker: '<span class="circle" style="left: {{left}}">{{index}}</span>',
 
-    invalidEvent: '<span class="circle">{{index}}</span> is invalid.',
+    invalidEvent: '<span class="circle">{{index}}</span> must be a valid date.',
 
     predatedEvent: '<span class="circle">{{index1}}</span> must happen before <span class="circle">{{index2}}</span>.',
 
