@@ -1,3 +1,5 @@
+/*jshint expr: true*/
+
 var expect = chai.expect;
 
 describe("Collection helpers", function () {
@@ -289,7 +291,7 @@ describe("Cantwait functions", function () {
   describe("createEventInputs()", function () {
     it("should return 2 empty elements when 0 dates are given in argument", function () {
       var inputs = createEventInputs([]);
-      expect(inputs).to.be.an("array").and.to.have.length(2);
+      expect(inputs).to.be.an("array").of.length(2);
       expect(inputs[0]).to.be.an.instanceof(HTMLElement);
       expect(inputs[1]).to.be.an.instanceof(HTMLElement);
       expect(inputs[0].querySelector("label").textContent).to.equal("1");
@@ -302,7 +304,7 @@ describe("Cantwait functions", function () {
 
     it("should return 2 empty elements when 1 date is given in argument", function () {
       var inputs = createEventInputs(["1988-10-08"]);
-      expect(inputs).to.be.an("array").and.to.have.length(2);
+      expect(inputs).to.be.an("array").of.length(2);
       expect(inputs[0]).to.be.an.instanceof(HTMLElement);
       expect(inputs[1]).to.be.an.instanceof(HTMLElement);
       expect(inputs[0].querySelector("label").textContent).to.equal("1");
@@ -315,7 +317,7 @@ describe("Cantwait functions", function () {
 
     it("should return 2 filled elements when 2 dates are given in argument", function () {
       var inputs = createEventInputs(["1988-10-08", "2014-02-24"]);
-      expect(inputs).to.be.an("array").and.to.have.length(2);
+      expect(inputs).to.be.an("array").of.length(2);
       expect(inputs[0]).to.be.an.instanceof(HTMLElement);
       expect(inputs[1]).to.be.an.instanceof(HTMLElement);
       expect(inputs[0].querySelector("label").textContent).to.equal("1");
@@ -328,7 +330,7 @@ describe("Cantwait functions", function () {
 
     it("should return 2 filled elements with delete buttons displayed when 3 dates are given in argument", function () {
       var inputs = createEventInputs(["1988-10-08", "2014-02-24", "2015-01-01"]);
-      expect(inputs).to.be.an("array").and.to.have.length(3);
+      expect(inputs).to.be.an("array").of.length(3);
       expect(inputs[0]).to.be.an.instanceof(HTMLElement);
       expect(inputs[1]).to.be.an.instanceof(HTMLElement);
       expect(inputs[2]).to.be.an.instanceof(HTMLElement);
@@ -408,68 +410,47 @@ describe("Cantwait functions", function () {
     });
   });
 
-
   describe('makeDateEvents()', function () {
-    it('should be an object with correct properties', function () {
-      var de = makeDateEvents(["1988"]);
-      expect(de).to.be.an("object");
-      expect(de).to.have.property("dateEvents").that.is.an("array");
-      expect(de).to.have.property("errors").that.is.an("object");
-      expect(de).to.have.deep.property("errors.indices").that.is.an("array");
-      expect(de).to.have.deep.property("errors.messages").that.is.an("array");
+    it('should be an array', function () {
+      expect(makeDateEvents(["1988"])).to.be.an("array").of.length(1);
     });
 
     it('should handle empty arrays', function () {
-      var de = makeDateEvents([]);
-      expect(de.dateEvents).to.be.empty;
-      expect(de.errors.indices).to.be.empty;
-      expect(de.errors.messages).to.be.empty;
+      expect(makeDateEvents([])).to.be.empty;
     });
 
     it('should create a DateEvent collection', function () {
       var de = makeDateEvents(["1988", "2014"]);
-      expect(de.dateEvents).to.have.length(2);
-      expect(de.errors.indices).to.be.empty;
-      expect(de.errors.messages).to.be.empty;
-      expect(de.dateEvents[0].toString()).to.equal(new Date("1988").toString());
-      expect(de.dateEvents[1].toString()).to.equal(new Date("2014").toString());
+      expect(de).to.have.length(2);
+      expect(de[0].toString()).to.equal(new Date("1988").toString());
+      expect(de[1].toString()).to.equal(new Date("2014").toString());
     });
 
     it('should handle erroneous events', function () {
       var de = makeDateEvents(["1988", "test"]);
-      expect(de.dateEvents).to.have.length(2);
-      expect(de.errors.indices).to.be.not.empty;
-      expect(de.errors.messages).to.be.not.empty;
+      expect(de).to.have.length(2);
+      expect(de[0].toString()).to.equal(new Date("1988").toString());
+      expect(de[1].toString()).to.be.NaN;
     });
   });
 
-  describe('validate()', function () {
+  describe('checkForErrors()', function () {
     it('should handle a collection of valid dates', function () {
-      var errors = validate([new Date("1988"), new Date("2014")]);
+      var errors = checkForErrors([new Date("1988"), new Date("2014")]);
       expect(errors.indices).to.have.length(0);
       expect(errors.messages).to.have.length(0);
     });
 
     it('should handle a collection of invalid dates', function () {
-      var errors = validate([new Date("1988"), new Date("test")]);
+      var errors = checkForErrors([new Date("1988"), new Date("test")]);
       expect(errors.indices).to.deep.equal([1]);
       expect(errors.messages[0]).to.match(/^.*2.* must be a valid date.$/);
     });
 
-    it('should handle a collection of dates in wrong orger', function () {
-      var errors = validate([new Date("2014"), new Date("1988")]);
+    it('should handle a collection of dates in wrong order', function () {
+      var errors = checkForErrors([new Date("2014"), new Date("1988")]);
       expect(errors.indices).to.deep.equal([0, 1]);
       expect(errors.messages[0]).to.match(/^.*1.* must happen before .*2.*.$/);
-    });
-  });
-
-  describe('isValid()', function () {
-    it('should be true when a DateEvent collection is valid', function () {
-      expect(isValid(makeDateEvents(["2013", "2014"]))).to.be.true;
-    });
-
-    it('should be false when a DateEvent collection is invalid', function () {
-      expect(isValid(makeDateEvents(["2013", "test"]))).to.be.false;
     });
   });
 });

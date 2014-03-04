@@ -48,24 +48,25 @@ function controller(events) {
   });
 
   var dateEvents = makeDateEvents(events);
+  var errors = checkForErrors(dateEvents);
 
-  if(!isValid(dateEvents)) {
-    errorsElement.appendChild(buildList(dateEvents.errors.messages));
-    forEach(dateEvents.errors.indices, function (index) {
+  if(hasErrors(errors)) {
+    errorsElement.appendChild(buildList(errors.messages));
+    forEach(errors.indices, function (index) {
       document.querySelector("#events .form-group:nth-child(" + (index + 1) + ")").classList.add("has-error");
     });
     show(errorsElement);
     hide(outputElement);
   }
   else {
-    if(dateEvents.dateEvents.length >= 2) {
+    if(dateEvents.length >= 2) {
       show(outputElement);
-      playTimers(dateEvents.dateEvents);
+      playTimers(dateEvents);
 
       hide(errorsElement);
 
       // Creates the circled markers above the progress bar
-      forEach(dateEvents.dateEvents, function (element, index, array) {
+      forEach(dateEvents, function (element, index, array) {
         var newMarker = stringToElement(render(getTemplate("marker"), {
           index: index + 1,
           left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"

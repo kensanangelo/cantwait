@@ -278,18 +278,15 @@ function buildTimerList(events, time) {
 }
 
 /**
- * Create a DateEvent collection and checks for input error
+ * Create a collection of Date elements
  *
- * @param   {String[]} events  The strings to create the DateEvents
- * @returns {Object}           The collection of dates and the list of errors
+ * @param   {String[]} events  The strings to create the Date elements
+ * @returns {Object}           The collection of Date elements
  */
 function makeDateEvents(events) {
-  var object = {};
-  object.dateEvents = map(events, function (str) {
+  return map(events, function (str) {
     return new Date(str);
   });
-  object.errors = validate(object.dateEvents);
-  return object;
 }
 
 /**
@@ -298,7 +295,7 @@ function makeDateEvents(events) {
  * @param   {Date[]} dateEvents  The Date elements to check
  * @returns {Object}             The list of error indices and messages
  */
-function validate(dateEvents) {
+function checkForErrors(dateEvents) {
   var errors = {
     indices: [],
     messages: []
@@ -331,17 +328,4 @@ function validate(dateEvents) {
   });
 
   return errors;
-}
-
-/**
- * Helper to check if a DateEvent collection is valid
- *
- * @param   {Object}   dateEvents  The collection to check
- * @returns {Boolean}  true if the collection is valid, false otherwise
- */
-function isValid(dateEvents) {
-  if(dateEvents.errors.indices.length === 0)
-    return true;
-  else
-    return false;
 }
