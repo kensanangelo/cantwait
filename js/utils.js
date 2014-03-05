@@ -210,7 +210,7 @@ function prettyPrintDelta(delta) {
 function newEventInput(value, index, showCloseBtn) {
   var eventElement = stringToElement(render(getTemplate("input"), {
     id: generateRandomString(),
-    index: index,
+    eventNumber: index,
     value: value
   }));
 
@@ -281,7 +281,7 @@ function updateProgressBar(progress, ratio) {
 function buildTimerList(events, time) {
   return buildList(map(events, function (event, index) {
     return render(getTemplate(time >= event ? "pastEvent" : "futureEvent"), {
-      index: index + 1,
+      eventNumber: index + 1,
       time: prettyPrintDelta(round(Math.abs(time - event) / 1000))
     });
   }));
@@ -306,17 +306,18 @@ function makeDateEvents(events) {
  * @returns {Object}             The list of error indices and messages
  */
 function checkForErrors(dateEvents) {
-  var errors = {
-    indices: [],
-    messages: []
-  };
+  var eventNumbers = [],
+      messages = [];
 
   forEach(dateEvents, function (dateEvent, index) {
+    var currentEventNumber = index + 1;
+
     // Validates the date format
     if (isNaN(dateEvent)) {
-      errors.indices.push(index);
-      errors.messages.push(render(getTemplate("invalidEvent"), {
-        index: index + 1
+      eventNumbers.push(currentEventNumber);
+
+      messages.push(render(getTemplate("invalidEvent"), {
+        eventNumber: currentEventNumber
       }));
     }
 
@@ -326,16 +327,21 @@ function checkForErrors(dateEvents) {
 
     // Validates the order on dates
     if (!isNaN(dateEvent) && !isNaN(dateEvents[index + 1]) && dateEvent >= dateEvents[index + 1]) {
-      if (errors.indices.indexOf(index) === -1)
-        errors.indices.push(index);
-      if (errors.indices.indexOf(index + 1) === -1)
-        errors.indices.push(index + 1);
-      errors.messages.push(render(getTemplate("predatedEvent"), {
-        index1: index + 1,
-        index2: index + 2
+      if (!contains(eventNumbers, currentEventNumber))
+        eventNumbers.push(currentEventNumber);
+
+      if (!contains(eventNumbers, currentEventNumber + 1))
+        eventNumbers.push(currentEventNumber + 1);
+
+      messages.push(render(getTemplate("predatedEvent"), {
+        eventNumber1: currentEventNumber,
+        eventNumber2: currentEventNumber + 1
       }));
     }
   });
 
-  return errors;
+  return {
+    eventNumbers: eventNumbers,
+    messages: messages
+  };
 }

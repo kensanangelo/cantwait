@@ -50,10 +50,10 @@ function controller(events) {
   var dateEvents = makeDateEvents(events);
   var errors = checkForErrors(dateEvents);
 
-  if(hasErrors(errors)) {
+  if(errors.messages.length > 0) {
     errorsElement.appendChild(buildList(errors.messages));
-    forEach(errors.indices, function (index) {
-      document.querySelector("#events .form-group:nth-child(" + (index + 1) + ")").classList.add("has-error");
+    forEach(errors.eventNumbers, function (number) {
+      document.querySelector("#events .form-group:nth-child(" + number + ")").classList.add("has-error");
     });
     show(errorsElement);
     hide(outputElement);
@@ -68,7 +68,7 @@ function controller(events) {
       // Creates the circled markers above the progress bar
       forEach(dateEvents, function (element, index, array) {
         var newMarker = stringToElement(render(getTemplate("marker"), {
-          index: index + 1,
+          eventNumber: index + 1,
           left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
         }));
         markersElement.appendChild(newMarker);

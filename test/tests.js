@@ -450,19 +450,19 @@ describe("Cantwait functions", function () {
   describe('checkForErrors()', function () {
     it('should handle a collection of valid dates', function () {
       var errors = checkForErrors([new Date("1988"), new Date("2014")]);
-      expect(errors.indices).to.have.length(0);
-      expect(errors.messages).to.have.length(0);
+      expect(errors.eventNumbers).to.be.an('array').of.length(0);
+      expect(errors.messages).to.be.an('array').of.length(0);
     });
 
     it('should handle a collection of invalid dates', function () {
       var errors = checkForErrors([new Date("1988"), new Date("test")]);
-      expect(errors.indices).to.deep.equal([1]);
+      expect(errors.eventNumbers).to.deep.equal([2]);
       expect(errors.messages[0]).to.match(/^.*2.* must be a valid date.$/);
     });
 
     it('should handle a collection of dates in wrong order', function () {
       var errors = checkForErrors([new Date("2014"), new Date("1988")]);
-      expect(errors.indices).to.deep.equal([0, 1]);
+      expect(errors.eventNumbers).to.deep.equal([1, 2]);
       expect(errors.messages[0]).to.match(/^.*1.* must happen before .*2.*.$/);
     });
   });
