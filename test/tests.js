@@ -466,4 +466,27 @@ describe("Cantwait functions", function () {
       expect(errors.messages[0]).to.match(/^.*1.* must happen before .*2.*.$/);
     });
   });
+
+  describe('makeEventMarkers()', function () {
+    it('should create a list of HTML elements', function () {
+      var markers = makeEventMarkers([new Date("1988"), new Date("2014")]);
+      expect(markers).to.be.an('array').of.length(2);
+      expect(markers[0]).to.be.an.instanceof(HTMLElement);
+      expect(markers[1]).to.be.an.instanceof(HTMLElement);
+    });
+
+    it('should position correctly some elements', function () {
+      var markers = makeEventMarkers([new Date("1900"), new Date("1950"), new Date("2000")]);
+      expect(markers[0].outerHTML).to.contain("left: 0");
+      expect(markers[1].outerHTML).to.contain("left: 50%");
+      expect(markers[2].outerHTML).to.contain("left: 100%");
+    });
+
+    it('should number correctly some elements', function () {
+      var markers = makeEventMarkers([new Date("1988"), new Date("2000"), new Date("2014")]);
+      expect(markers[0].textContent).to.equal("1");
+      expect(markers[1].textContent).to.equal("2");
+      expect(markers[2].textContent).to.equal("3");
+    });
+  });
 });

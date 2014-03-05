@@ -66,12 +66,8 @@ function controller(events) {
       hide(errorsElement);
 
       // Creates the circled markers above the progress bar
-      forEach(dateEvents, function (element, index, array) {
-        var newMarker = stringToElement(render(getTemplate("marker"), {
-          eventNumber: index + 1,
-          left:  100 * (element - array[0]) / (array[array.length - 1] - array[0]) + "%"
-        }));
-        markersElement.appendChild(newMarker);
+      forEach(makeEventMarkers, function (marker) {
+        markersElement.appendChild(marker);
       });
     }
   }

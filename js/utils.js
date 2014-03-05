@@ -288,7 +288,7 @@ function buildTimerList(events, time) {
 }
 
 /**
- * Create a collection of Date elements
+ * Creates a collection of Date elements
  *
  * @param   {String[]} events  The strings to create the Date elements
  * @returns {Object}           The collection of Date elements
@@ -300,7 +300,10 @@ function makeDateEvents(events) {
 }
 
 /**
- * Create a DateEvent collection and checks for input error
+ * Checks for input errors in a collection of dates
+ * The errors checked are:
+ * - The dates are invalid
+ * - A given date happens before the previous element from the collection
  *
  * @param   {Date[]} dateEvents  The Date elements to check
  * @returns {Object}             The list of error indices and messages
@@ -344,4 +347,19 @@ function checkForErrors(dateEvents) {
     eventNumbers: eventNumbers,
     messages: messages
   };
+}
+
+/**
+ * Creates a list of HTML elements, markers for each event, including their relative position
+ *
+ * @param   {Date[]} dateEvents  The Date elements, each of them will have a marker
+ * @returns {HTMLElement}        The list of markers as HTML elements
+ */
+function makeEventMarkers(dateEvents) {
+  return map(dateEvents, function (dateEvent, index) {
+    return stringToElement(render(getTemplate("marker"), {
+      eventNumber: index + 1,
+      left:  100 * (dateEvent - dateEvents[0]) / (dateEvents[dateEvents.length - 1] - dateEvents[0]) + "%"
+    }));
+  });
 }
