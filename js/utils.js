@@ -22,6 +22,16 @@ function map(elements, callback) {
   return [].map.call(elements, callback);
 }
 
+/**
+ * Checks the presence of a value in an array
+ *
+ * @param   {*[]} array  The array to check
+ * @returns {Boolean}    true if the value exists, false otherwise
+ */
+function contains(array, value) {
+  return array.indexOf(value) !== -1;
+}
+
 // MATH HELPERS
 // ------------
 

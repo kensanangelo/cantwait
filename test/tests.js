@@ -52,6 +52,19 @@ describe("Collection helpers", function () {
       })).to.be.empty;
     });
   });
+
+  describe('contains()', function () {
+    it("should be true when an element exists in an array", function () {
+      expect(contains([1, 2, 3], 2)).to.be.true;
+    });
+    it("should be false when an element does not exist in an array", function () {
+      expect(contains([1, 2, 3], 4)).to.be.false;
+    });
+    it("should handle empty arrays", function () {
+      expect(contains([], false)).to.be.false;
+      expect(contains([], 0)).to.be.false;
+    });
+  });
 });
 
 describe("Math helpers", function () {
