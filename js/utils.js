@@ -152,6 +152,18 @@ function now() {
   return new Date();
 }
 
+/**
+ * Sets an interval while calling the function directly, instead of waiting for the end of the interval to call `func` for the first time.
+ *
+ * @param   {function} func   The function to be called repeatedly
+ * @param   {Number}   delay  The number of milliseconds that the `setInterval()` function should wait before each call to func.
+ * @returns {Number}          The unique interval ID created by `setInterval()`
+ */
+function setIntervalAndCall(func, delay) {
+  func();
+  return window.setInterval(func, delay);
+}
+
 // TEMPLATING SYSTEM
 // -----------------
 

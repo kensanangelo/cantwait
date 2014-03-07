@@ -207,6 +207,32 @@ describe("Other helpers", function () {
       expect(now()).to.be.above(new Date("2000"));
     });
   });
+
+  describe("setIntervalAndCall()", function () {
+    var intervalId;
+    var testValue = 0;
+
+    before(function (done) {
+      intervalId = setIntervalAndCall(function () {
+        ++testValue;
+
+        if(testValue === 10)
+         done();
+      }, 10);
+    });
+
+    after(function () {
+      window.clearInterval(intervalId);
+    });
+
+    it("should return a number", function () {
+      expect(intervalId).to.be.a("number");
+    });
+
+    it("should be called repeatedly", function () {
+      expect(testValue).to.equal(10);
+    });
+  });
 });
 
 describe("Templating system", function () {
