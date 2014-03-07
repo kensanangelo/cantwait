@@ -32,64 +32,6 @@ function contains(array, value) {
   return array.indexOf(value) !== -1;
 }
 
-// MATH HELPERS
-// ------------
-
-/**
- * Decimal adjustment of a number.
- * Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
- *
- * @param   {(Number|String)} value    The number.
- * @param   {Number}          [exp=0]  The exponent (the 10 logarithm of the adjustment base).
- * @returns {Number}                   The adjusted value.
- */
-function round(value, exp) {
-  // If the exp is undefined or zero...
-  if (typeof exp === 'undefined' || +exp === 0) {
-    return Math.round(value);
-  }
-
-  value = +value;
-  exp   = +exp;
-
-  // If the value is not a number or the exp is not an integer...
-  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
-    return NaN;
-  }
-
-  // Shift
-  value = value.toString().split('e');
-  value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
-
-  // Shift back
-  value = value.toString().split('e');
-  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
-}
-
-// STRING HELPERS
-// --------------
-
-/**
- * Generate a random identifier, random enough to be considered as unique.
- *
- * @returns {String}  A random string (16 alphanumerical characters)
- */
-function generateRandomString() {
-  return Math.random().toString(36).substr(2, 8);
-}
-
-// DATE HELPERS
-// ------------
-
-/**
- * Returns the current date
- *
- * @returns {Date}  The current date
- */
-function now() {
-  return new Date();
-}
-
 // DOM HELPERS
 // -----------
 
@@ -156,6 +98,58 @@ function buildList(array) {
   return stringToElement("<ul>" + array.reduce(function (previousValue, currentValue) {
     return previousValue + "<li>" + currentValue + "</li>";
   }, "") + "</ul>");
+}
+
+// OTHER HELPERS
+// -------------
+
+/**
+ * Decimal adjustment of a number.
+ * Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
+ *
+ * @param   {(Number|String)} value    The number.
+ * @param   {Number}          [exp=0]  The exponent (the 10 logarithm of the adjustment base).
+ * @returns {Number}                   The adjusted value.
+ */
+function round(value, exp) {
+  // If the exp is undefined or zero...
+  if (typeof exp === 'undefined' || +exp === 0) {
+    return Math.round(value);
+  }
+
+  value = +value;
+  exp   = +exp;
+
+  // If the value is not a number or the exp is not an integer...
+  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+    return NaN;
+  }
+
+  // Shift
+  value = value.toString().split('e');
+  value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+
+  // Shift back
+  value = value.toString().split('e');
+  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
+}
+
+/**
+ * Generate a random identifier, random enough to be considered as unique.
+ *
+ * @returns {String}  A random string (16 alphanumerical characters)
+ */
+function generateRandomString() {
+  return Math.random().toString(36).substr(2, 8);
+}
+
+/**
+ * Returns the current date
+ *
+ * @returns {Date}  The current date
+ */
+function now() {
+  return new Date();
 }
 
 // TEMPLATING SYSTEM

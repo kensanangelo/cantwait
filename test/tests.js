@@ -67,75 +67,6 @@ describe("Collection helpers", function () {
   });
 });
 
-describe("Math helpers", function () {
-  describe("round()", function () {
-    it("should act like Math.round when no second argument or second argument is 0", function() {
-      expect(round(3)).to.equal(3);
-      expect(round(3.0)).to.equal(3);
-      expect(round(2.4)).to.equal(2);
-      expect(round(2.5)).to.equal(3);
-      expect(round(2.675, 0)).to.equal(3);
-    });
-
-    it("should round decimals when second argument is > 0", function () {
-      expect(round(1.275, 2)).to.equal(1.28);
-      expect(round(2.675, 2)).to.equal(2.68);
-      expect(round(1.27499, 2)).to.equal(1.27);
-      expect(round(10.8034, 2)).to.equal(10.8);
-    });
-
-    it("should round to powers of 10 when second argument is < 0", function () {
-      expect(round(12.675, -1)).to.equal(10);
-      expect(round(1234.5678, -2)).to.equal(1200);
-      expect(round(12675, -4)).to.equal(10000);
-    });
-
-    it("should round scientific notations", function () {
-      expect(round(1.2345678e+2, 2)).to.equal(123.46);
-      expect(round(1.2345678e+2, -2)).to.equal(100);
-    });
-
-    it("should round strings", function () {
-      expect(round("123.45")).to.be.a('number').and.equal(123);
-      expect(round("1.2345678e+2", 2)).to.be.a('number').and.equal(123.46);
-    });
-
-    it("should fail on non-numerical strings", function () {
-      expect(round("foo")).to.be.NaN;
-      expect(round("bar", 2)).to.be.NaN;
-    });
-
-    it("should fail on non numbers", function () {
-      expect(round({})).to.be.NaN;
-    });
-  });
-});
-
-describe("String helpers", function () {
-  describe("generateRandomString()", function () {
-    it("should be a string", function () {
-      expect(generateRandomString()).to.be.a('string');
-    });
-
-    it("should be 8-char long every time", function () {
-      for(var i = 0; i < 10; ++i)
-        expect(generateRandomString()).to.have.length(8);
-    });
-  });
-});
-
-describe("Date helpers", function () {
-  describe("now()", function () {
-    it("should return a date", function () {
-      expect(now()).to.be.an.instanceof(Date);
-    });
-
-    it("should not return a zero date", function () {
-      expect(now()).to.be.above(new Date("2000"));
-    });
-  });
-});
-
 describe("DOM helpers", function () {
   describe("show()", function () {
     it("should remove the 'hidden' class of a single element", function () {
@@ -209,6 +140,71 @@ describe("DOM helpers", function () {
       expect(buildList([])).to.be.an.instanceof(HTMLUListElement);
       expect(buildList([]).children).to.have.length(0);
       expect(buildList([]).outerHTML).to.deep.equal("<ul></ul>");
+    });
+  });
+});
+
+describe("Other helpers", function () {
+  describe("round()", function () {
+    it("should act like Math.round when no second argument or second argument is 0", function() {
+      expect(round(3)).to.equal(3);
+      expect(round(3.0)).to.equal(3);
+      expect(round(2.4)).to.equal(2);
+      expect(round(2.5)).to.equal(3);
+      expect(round(2.675, 0)).to.equal(3);
+    });
+
+    it("should round decimals when second argument is > 0", function () {
+      expect(round(1.275, 2)).to.equal(1.28);
+      expect(round(2.675, 2)).to.equal(2.68);
+      expect(round(1.27499, 2)).to.equal(1.27);
+      expect(round(10.8034, 2)).to.equal(10.8);
+    });
+
+    it("should round to powers of 10 when second argument is < 0", function () {
+      expect(round(12.675, -1)).to.equal(10);
+      expect(round(1234.5678, -2)).to.equal(1200);
+      expect(round(12675, -4)).to.equal(10000);
+    });
+
+    it("should round scientific notations", function () {
+      expect(round(1.2345678e+2, 2)).to.equal(123.46);
+      expect(round(1.2345678e+2, -2)).to.equal(100);
+    });
+
+    it("should round strings", function () {
+      expect(round("123.45")).to.be.a('number').and.equal(123);
+      expect(round("1.2345678e+2", 2)).to.be.a('number').and.equal(123.46);
+    });
+
+    it("should fail on non-numerical strings", function () {
+      expect(round("foo")).to.be.NaN;
+      expect(round("bar", 2)).to.be.NaN;
+    });
+
+    it("should fail on non numbers", function () {
+      expect(round({})).to.be.NaN;
+    });
+  });
+
+  describe("generateRandomString()", function () {
+    it("should be a string", function () {
+      expect(generateRandomString()).to.be.a('string');
+    });
+
+    it("should be 8-char long every time", function () {
+      for(var i = 0; i < 10; ++i)
+        expect(generateRandomString()).to.have.length(8);
+    });
+  });
+
+  describe("now()", function () {
+    it("should return a date", function () {
+      expect(now()).to.be.an.instanceof(Date);
+    });
+
+    it("should not return a zero date", function () {
+      expect(now()).to.be.above(new Date("2000"));
     });
   });
 });
