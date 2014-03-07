@@ -78,6 +78,18 @@ function generateRandomString() {
   return Math.random().toString(36).substr(2, 8);
 }
 
+// DATE HELPERS
+// ------------
+
+/**
+ * Returns the current date
+ *
+ * @returns {Date}  The current date
+ */
+function now() {
+  return new Date();
+}
+
 // DOM HELPERS
 // -----------
 

@@ -124,6 +124,18 @@ describe("String helpers", function () {
   });
 });
 
+describe("Date helpers", function () {
+  describe("now()", function () {
+    it("should return a date", function () {
+      expect(now()).to.be.an.instanceof(Date);
+    });
+
+    it("should not return a zero date", function () {
+      expect(now()).to.be.above(new Date("2000"));
+    });
+  });
+});
+
 describe("DOM helpers", function () {
   describe("show()", function () {
     it("should remove the 'hidden' class of a single element", function () {
