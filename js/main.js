@@ -22,11 +22,9 @@ function playTimers(dateEvents) {
     );
   }
 
-  loop();
-
   document.dispatchEvent(new CustomEvent("timerStarted", {
     detail: {
-      newIntervalId: window.setInterval(loop, 1000)
+      newIntervalId: setIntervalAndCall(loop, 1000)
     }
   }));
 }
