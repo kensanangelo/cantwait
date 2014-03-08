@@ -381,3 +381,41 @@ function makeEventMarkers(dateEvents) {
     }));
   });
 }
+
+
+/**
+ * Updates the timers given a specific time and a list of events (mutable function)
+ *
+ * @param {HTMLElement} timersElement  The timer container to modify
+ * @param {Number}      ratio          The value to be applied to the progress bar
+ * @param {Date}        time           The time used to compute the the timers
+ * @param {Date[]}      dateEvents     The collection of events
+ */
+function updateTimers(timersElement, ratio, time, dateEvents) {
+  removeAllChildren(timersElement);
+
+  timersElement.appendChild(buildTimerList(dateEvents, time));
+
+  timersElement.classList.remove("alert-warning");
+  timersElement.classList.remove("alert-success");
+  timersElement.classList.remove("alert-info");
+
+  timersElement.classList.add(
+    ratio <  0.0 ? "alert-warning" :
+    ratio >= 1.0 ? "alert-success" :
+                   "alert-info"
+  );
+}
+
+/**
+ * Updates the entire output given a specific time and a list of events (mutable function)
+ *
+ * @param {HTMLElement} outputElement  The timer container to modify
+ * @param {Date}        time           The time used to compute the the timers
+ * @param {Date[]}      dateEvents     The collection of events
+ */
+function updateOutput(outputElement, time, dateEvents) {
+  var ratio = round(time - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
+  updateProgressBar(output.querySelector(".progress"), ratio);
+  updateTimers(output.querySelector(".alert"), ratio, time, dateEvents);
+}

@@ -1,39 +1,11 @@
 
-function playTimers(dateEvents) {
-  function loop() {
-    var counterElement = document.querySelector("#output .alert"),
-        currentTime = new Date(), // Now
-        ratio = round(currentTime - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]),
-        counters = [];
-
-    updateProgressBar(document.querySelector("#output .progress"), ratio);
-
-    removeAllChildren(counterElement);
-    counterElement.appendChild(buildTimerList(dateEvents, currentTime));
-
-    forEach(["alert-warning", "alert-success", "alert-info"], function (element) {
-      counterElement.classList.remove(element);
-    });
-
-    counterElement.classList.add(
-      ratio <  0.0 ? "alert-warning" :
-      ratio >= 1.0 ? "alert-success" :
-                     "alert-info"
-    );
-  }
-
-  document.dispatchEvent(new CustomEvent("timerStarted", {
-    detail: {
-      newIntervalId: setIntervalAndCall(loop, 1000)
-    }
-  }));
-}
-
 function controller(events) {
-
   var errorsElement  = document.querySelector("#errors"),
       markersElement = document.querySelector(".markers"),
-      outputElement  = document.querySelector("#output");
+      outputElement  = document.querySelector("#output"),
+      inputsElement  = document.querySelector("#events"),
+      dateEvents     = makeDateEvents(events),
+      errors         = checkForErrors(dateEvents);
 
   removeAllChildren(markersElement);
   removeAllChildren(errorsElement);
@@ -41,33 +13,32 @@ function controller(events) {
   hide(errorsElement);
   hide(outputElement);
 
-  forEach(document.querySelectorAll("#events .form-group"), function (element) {
-    element.classList.remove("has-error");
+  forEach(inputsElement.querySelectorAll(".form-group"), function (inputElement) {
+    inputElement.classList.remove("has-error");
   });
 
-  var dateEvents = makeDateEvents(events);
-  var errors = checkForErrors(dateEvents);
-
   if(errors.messages.length > 0) {
-    errorsElement.appendChild(buildList(errors.messages));
     forEach(errors.eventNumbers, function (number) {
-      document.querySelector("#events .form-group:nth-child(" + number + ")").classList.add("has-error");
+      inputsElement.querySelector(".form-group:nth-child(" + number + ")").classList.add("has-error");
     });
+    errorsElement.appendChild(buildList(errors.messages));
     show(errorsElement);
-    hide(outputElement);
   }
-  else {
-    if(dateEvents.length >= 2) {
-      show(outputElement);
-      playTimers(dateEvents);
+  else if(dateEvents.length >= 2) {
+    // Creates the circled markers above the progress bar
+    forEach(makeEventMarkers, function (marker) {
+      markersElement.appendChild(marker);
+    });
 
-      hide(errorsElement);
+    document.dispatchEvent(new CustomEvent("timerStarted", {
+      detail: {
+        newIntervalId: setIntervalAndCall(function () {
+          updateOutput(document.querySelector("#output"), now(), dateEvents);
+        }, 1000)
+      }
+    }));
 
-      // Creates the circled markers above the progress bar
-      forEach(makeEventMarkers, function (marker) {
-        markersElement.appendChild(marker);
-      });
-    }
+    show(outputElement);
   }
 }
 
