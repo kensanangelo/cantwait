@@ -523,4 +523,33 @@ describe("Cantwait functions", function () {
       expect(markers[2].textContent).to.equal("3");
     });
   });
+
+  describe("updateTimers()", function () {
+    var listElement = stringToElement("<ul><li>test string</li></ul>");
+
+    it("should include the list of timers", function () {
+      var timersElement = stringToElement("<div></div>");
+      updateTimers(timersElement, -1, listElement);
+      expect(timersElement.textContent).to.equal("test string");
+    });
+
+    it("should add the proper CSS classes", function () {
+      var timersElement = stringToElement("<div></div>");
+
+      updateTimers(timersElement, -1, listElement);
+      expect(timersElement.className).to.contain("alert-warning");
+
+      updateTimers(timersElement, 0, listElement);
+      expect(timersElement.className).to.contain("alert-info");
+
+      updateTimers(timersElement, 0.5, listElement);
+      expect(timersElement.className).to.contain("alert-info");
+
+      updateTimers(timersElement, 1, listElement);
+      expect(timersElement.className).to.contain("alert-success");
+
+      updateTimers(timersElement, 2, listElement);
+      expect(timersElement.className).to.contain("alert-success");
+    });
+  });
 });

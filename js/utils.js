@@ -388,13 +388,12 @@ function makeEventMarkers(dateEvents) {
  *
  * @param {HTMLElement} timersElement  The timer container to modify
  * @param {Number}      ratio          The value to be applied to the progress bar
- * @param {Date}        time           The time used to compute the the timers
- * @param {Date[]}      dateEvents     The collection of events
+ * @param {Element}     listElement    The list of timers to display
  */
-function updateTimers(timersElement, ratio, time, dateEvents) {
+function updateTimers(timersElement, ratio, listElement) {
   removeAllChildren(timersElement);
 
-  timersElement.appendChild(buildTimerList(dateEvents, time));
+  timersElement.appendChild(listElement);
 
   timersElement.classList.remove("alert-warning");
   timersElement.classList.remove("alert-success");
@@ -417,5 +416,5 @@ function updateTimers(timersElement, ratio, time, dateEvents) {
 function updateOutput(outputElement, time, dateEvents) {
   var ratio = round(time - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
   updateProgressBar(output.querySelector(".progress"), ratio);
-  updateTimers(output.querySelector(".alert"), ratio, time, dateEvents);
+  updateTimers(output.querySelector(".alert"), ratio, buildTimerList(dateEvents, time));
 }
