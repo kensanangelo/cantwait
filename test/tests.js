@@ -552,4 +552,17 @@ describe("Cantwait functions", function () {
       expect(timersElement.className).to.contain("alert-success");
     });
   });
+
+  describe("updateOutput()", function () {
+    outputElement = stringToElement("<div><div class=progress><div class=progress-bar></div><div class=value></div></div><div class=alert></div></div>");
+    updateOutput(outputElement, new Date('2015'), [new Date('2014')]);
+
+    it('should fill the progress bar block', function () {
+      expect(outputElement.querySelector('.value').textContent).to.not.be.empty;
+    });
+
+    it('should fill the timer block', function () {
+      expect(outputElement.querySelector('.alert').textContent).to.not.be.empty;
+    });
+  });
 });

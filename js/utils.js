@@ -415,6 +415,6 @@ function updateTimers(timersElement, ratio, listElement) {
  */
 function updateOutput(outputElement, time, dateEvents) {
   var ratio = round(time - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
-  updateProgressBar(output.querySelector(".progress"), ratio);
-  updateTimers(output.querySelector(".alert"), ratio, buildTimerList(dateEvents, time));
+  updateProgressBar(outputElement.querySelector(".progress"), ratio);
+  updateTimers(outputElement.querySelector(".alert"), ratio, buildTimerList(dateEvents, time));
 }
