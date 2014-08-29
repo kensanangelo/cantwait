@@ -26,7 +26,7 @@ function controller(events) {
   }
   else if(dateEvents.length >= 2) {
     // Creates the circled markers above the progress bar
-    forEach(makeEventMarkers, function (marker) {
+    forEach(makeEventMarkers(dateEvents), function (marker) {
       markersElement.appendChild(marker);
     });
 
