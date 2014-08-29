@@ -90,7 +90,7 @@ document.querySelector("#addEvent").addEventListener("click", function (e) {
   e.preventDefault();
   document.querySelector("#events").appendChild(newEventInput(
     "",
-    document.querySelector("#events").children.length + 2,
+    document.querySelector("#events").children.length + 1,
     true
   ));
   show(document.querySelectorAll("#form .close"));
