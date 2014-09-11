@@ -418,3 +418,53 @@ function updateOutput(outputElement, time, dateEvents) {
   updateProgressBar(outputElement.querySelector(".progress"), ratio);
   updateTimers(outputElement.querySelector(".alert"), ratio, buildTimerList(dateEvents, time));
 }
+
+/**
+ * Main function of cantwait (mutable function)
+ * Computes and display all outputs for a set of given events
+ * Does not take care of events, UI interaction, nor browser history manipulation
+ *
+ * @param   {String[]} events  The event strings to run cantwait from
+ */
+function cantwait(events) {
+  var errorsElement  = document.querySelector("#errors"),
+      markersElement = document.querySelector(".markers"),
+      outputElement  = document.querySelector("#output"),
+      inputsElement  = document.querySelector("#events"),
+      dateEvents     = makeDateEvents(events),
+      errors         = checkForErrors(dateEvents);
+
+  removeAllChildren(markersElement);
+  removeAllChildren(errorsElement);
+
+  hide(errorsElement);
+  hide(outputElement);
+
+  forEach(inputsElement.querySelectorAll(".form-group"), function (inputElement) {
+    inputElement.classList.remove("has-error");
+  });
+
+  if(errors.messages.length > 0) {
+    forEach(errors.eventNumbers, function (number) {
+      inputsElement.querySelector(".form-group:nth-child(" + number + ")").classList.add("has-error");
+    });
+    errorsElement.appendChild(buildList(errors.messages));
+    show(errorsElement);
+  }
+  else if(dateEvents.length >= 2) {
+    // Creates the circled markers above the progress bar
+    forEach(makeEventMarkers(dateEvents), function (marker) {
+      markersElement.appendChild(marker);
+    });
+
+    document.dispatchEvent(new CustomEvent("timerStarted", {
+      detail: {
+        newIntervalId: setIntervalAndCall(function () {
+          updateOutput(document.querySelector("#output"), now(), dateEvents);
+        }, 1000)
+      }
+    }));
+
+    show(outputElement);
+  }
+}
