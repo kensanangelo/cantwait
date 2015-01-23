@@ -2,7 +2,7 @@ var templates = {
    input: '<div class="form-group">' +
             '<label for="event-{{id}}" class="control-label circle">{{eventNumber}}</label>' +
             '<input type="datetime" class="form-control" id="event-{{id}}" name="e" value="{{value}}" placeholder="yyyy-mm-ddThh:mm:ss±hh:mm">' +
-            '<button type="button" class="close delete-event" aria-hidden="true">&times;</button>' +
+            '<button type="button" class="close delete-event" aria-hidden="true" title="Delete this event">&times;</button>' +
           '</div>',
 
     marker: '<span class="circle" style="left: {{left}}">{{eventNumber}}</span>',
