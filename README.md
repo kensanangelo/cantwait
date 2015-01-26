@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/astorije/cantwait.svg?branch=master)](https://travis-ci.org/astorije/cantwait)
+
 # Can't wait!
 
 This is a small web application computing time remaining between events, intended to learn and play with recent features of the JavaScript Web APIs.
