@@ -1,0 +1,24 @@
+{
+  "name": "cantwait",
+  "version": "0.0.0",
+  "description": "Small web application computing time remaining between events, intended to learn and play with recent features of the JavaScript Web APIs.",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/astorije/cantwait.git"
+  },
+  "author": {
+    "name": "Jérémie Astori",
+    "url": "https://jeremie.astori.fr"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/astorije/cantwait/issues"
+  }
+}
