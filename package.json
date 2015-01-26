@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha-phantomjs ./test/index.html"
+    "test": "mocha-phantomjs ./test/index.html",
+    "update-testlib": "npm install mocha chai && cp node_modules/{mocha/mocha.{js,css},chai/chai.js} test/ && npm uninstall mocha chai"
   },
   "repository": {
     "type": "git",
