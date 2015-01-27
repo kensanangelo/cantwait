@@ -24,13 +24,28 @@ I used this as an excuse to play with some of the recent JavaScript APIs for the
 - Functional programming principles applied in JavaScript
 - Testing in JavaScript
   - [Mocha](http://mochajs.org/)
-  - [Chai](http://chaijs.com/)
-  - BDD
+  - [Chai](http://chaijs.com/) and the BDD assertion style
+  - Automation of client-side testing with [Travis CI](http://docs.travis-ci.com/) and [PhantomJS](http://phantomjs.org/)
 
 This was also a way to refresh my JavaScript. All of this was done using [Vanilla JS](http://vanilla-js.com/).
 
 ## Tests
 
+### In the browser
+
 Open `test/index.html` in your browser (or <http://cantwait.astori.fr/test/>) and look at all these tests gracefully pass.
 
 If they don't, please [report a bug](https://github.com/astorije/cantwait/issues).
+
+### On the command line
+
+Run the following:
+
+```bash
+npm install
+npm test
+```
+
+This is also used for continuous integration.
+
+Caveat: Since a headless WebKit is used for this, tests may pass in the console but fail in your actual browser.
