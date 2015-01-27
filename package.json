@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha-phantomjs test/index.html"
+    "test": "mocha-phantomjs test/index.html",
+    "doc": "jsdoc -c jsdoc.conf.json"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "phantomjs": "~1.9.13",
-    "mocha-phantomjs": "~3.5.3"
+    "mocha-phantomjs": "~3.5.3",
+    "jsdoc": "~3.3.0-beta1"
   }
 }

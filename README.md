@@ -22,6 +22,7 @@ I used this as an excuse to play with some of the recent JavaScript APIs for the
 - [Bootstrap 3](http://getbootstrap.com/)
 - Latest CSS Selectors
 - Functional programming principles applied in JavaScript
+- [JSDoc](http://usejsdoc.org/)
 - Testing in JavaScript
   - [Mocha](http://mochajs.org/)
   - [Chai](http://chaijs.com/) and the BDD assertion style
@@ -61,4 +62,17 @@ To do so, run the following, and then commit the changes:
 npm install mocha chai
 cp node_modules/{mocha/mocha.{js,css},chai/chai.js} test/
 npm uninstall mocha chai
+```
+
+## Documentation
+
+The API documentation can be seen when opening `doc/global.html` in your browser, or at <http://cantwait.astori.fr/doc/global.html>.
+
+### Generate the documentation
+
+To generate the documentation, run the following, and then commit the changes:
+
+```bash
+npm install
+npm run doc
 ```
