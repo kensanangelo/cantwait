@@ -76,3 +76,17 @@ To generate the documentation, run the following, and then commit the changes:
 npm install
 npm run doc
 ```
+
+## Compatibility
+
+Because I used the experimental [`ChildNode.remove()`](https://developer.mozilla.org/en-US/docs/Web/API/ChildNode.remove), browser compatibility of *Can't Wait!* is limited.
+
+As far as I know, it looks like this:
+
+- Chrome 23 and up is compatible
+- Firefox 23.0 and up is compatible
+- Opera 10.0 and up is compatible
+- Internet Explorer is not compatible
+- Safari is not compatible
+
+Because I do not plan to use Internet Explorer or Safari someday soon and, let's face, nobody else will actually use *Can't Wait!*, I will not try to fix this.
