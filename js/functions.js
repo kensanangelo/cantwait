@@ -3,7 +3,9 @@
 
 /**
  * Executes a function once per element in a container.
- * Abstracts Array.prototype.forEach for `Array`s and `NodeList`s.
+ *
+ * Abstracts [`Array.prototype.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
+ * for `Array`s and `NodeList`s.
  *
  * @param {Array|NodeList} elements The elements to be processed
  * @param {function}       f        Function to apply to each element
@@ -14,7 +16,9 @@ function forEach(elements, f) {
 
 /**
  * Creates a new array with the results of calling a function on every element in a container.
- * Abstracts Array.prototype.map for `Array`s and `NodeList`s.
+ *
+ * Abstracts [`Array.prototype.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+ * for `Array`s and `NodeList`s.
  *
  * @param   {Array|NodeList} elements The elements to be processed
  * @param   {function}       f        Function to apply to each element
@@ -29,7 +33,7 @@ function map(elements, f) {
  *
  * @param   {Array}   array The array to test against
  * @param   {*}       value The value to test
- * @returns {Boolean}       true if the value exists, false otherwise
+ * @returns {Boolean}       `true` if the value exists, `false` otherwise
  */
 function contains(array, value) {
   return array.indexOf(value) !== -1;
@@ -40,6 +44,7 @@ function contains(array, value) {
 
 /**
  * Displays a non-visible HTML element.
+ *
  * This function has side-effects: it mutates `elements`.
  *
  * @param {HTMLElement|Array.<HTMLElement>|NodeList} elements The HTML element(s) to show
@@ -56,6 +61,7 @@ function show(elements) {
 
 /**
  * Hides an HTML element.
+ *
  * This function has side-effects: it mutates `elements`.
  *
  * @param {HTMLElement|Array.<HTMLElement>|NodeList} elements The HTML element(s) to hide
@@ -72,6 +78,7 @@ function hide(elements) {
 
 /**
  * Removes all children of a given HTML element.
+ *
  * This function has side-effects: it mutates `element`.
  *
  * @param {HTMLElement} element  The element to empty
@@ -110,8 +117,8 @@ function buildList(array) {
 // -------------
 
 /**
- * Computes the decimal adjustment of a number.
- * Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
+ * Computes the decimal adjustment of a number.<br>
+ * Based on [MDN's decimal rounding](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding).
  *
  * @param   {Number|String} value   The number
  * @param   {Number}        [exp=0] The exponent (the 10-log of the adjustment base)
@@ -202,7 +209,7 @@ function render(template, data) {
 // ------------------
 
 /**
- * Transforms a number of seconds into a human-readable (if this human reads English) string.
+ * Transforms a number of seconds into a human-readable (if this human reads English) string.<br>
  * It will show weeks, days, minutes and seconds in a way the the first unit will not be a zero.
  *
  * @param   {Number} delta The number of seconds to compute
@@ -252,7 +259,7 @@ function newEventInput(value, index, showCloseBtn) {
 }
 
 /**
- * Creates one event input for each date string given in the array argument.
+ * Creates one event input for each date string given in the array argument.<br>
  * If there is less than 2 strings given, 2 empty inputs are returned.
  *
  * @param   {Array.<String>} strings The dates to be parsed
@@ -270,7 +277,8 @@ function createEventInputs(strings) {
 }
 
 /**
- * Set a progress bar element attributes depending on the given value
+ * Set a progress bar element attributes depending on the given value.
+ *
  * This function has side-effects: it mutates `progress`.
  *
  *
@@ -327,7 +335,7 @@ function makeDateEvents(events) {
 }
 
 /**
- * Checks for input errors in a collection of dates.
+ * Checks for input errors in a collection of dates.<br>
  * The errors checked are:
  * - The dates are invalid
  * - A given date happens before the previous element from the collection
@@ -394,6 +402,7 @@ function makeEventMarkers(dateEvents) {
 
 /**
  * Updates the timers given a specific time and a list of events.
+ *
  * This function has side-effects: it mutates `timersElement`.
  *
  * @param {HTMLElement} timersElement The timer container to modify
@@ -418,6 +427,7 @@ function updateTimers(timersElement, ratio, listElement) {
 
 /**
  * Updates the entire output given a specific time and a list of events.
+ *
  * This function has side-effects: it mutates `outputElement`.
  *
  * @param {HTMLElement}  outputElement The timer container to modify
@@ -431,9 +441,10 @@ function updateOutput(outputElement, time, dateEvents) {
 }
 
 /**
- * Main function of cantwait.
- * Computes and display all outputs for a set of given events.
+ * Main function of cantwait.<br>
+ * Computes and display all outputs for a set of given events.<br>
  * Does not take care of events, UI interaction, nor browser history manipulation.
+ *
  * This function has side-effects: it mutates elements from the DOM.
  *
  * @param   {Array.<String>} events  The event strings to run cantwait from
