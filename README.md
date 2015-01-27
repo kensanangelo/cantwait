@@ -49,3 +49,16 @@ npm test
 This is also used for continuous integration.
 
 Caveat: Since a headless WebKit is used for this, tests may pass in the console but fail in your actual browser.
+
+### Update test libraries
+
+It is a good idea to update the test libraries from time to time, since they are not part of the `package.json` file
+(automating this part with [Grunt](http://gruntjs.com/) or similar would be overkill...).
+
+To do so, run the following, and then commit the changes:
+
+```bash
+npm install mocha chai
+cp node_modules/{mocha/mocha.{js,css},chai/chai.js} test/
+npm uninstall mocha chai
+```
