@@ -19,12 +19,12 @@ I used this as an excuse to play with some of the recent JavaScript APIs for the
 
 - History API
 - Date manipulation in JavaScript
-- Bootstrap 3
+- [Bootstrap 3](http://getbootstrap.com/)
 - Latest CSS Selectors
 - Functional programming principles applied in JavaScript
 - Testing in JavaScript
-  - Mocha
-  - Chai
+  - [Mocha](http://mochajs.org/)
+  - [Chai](http://chaijs.com/)
   - BDD
 
 This was also a way to refresh my JavaScript. All of this was done using [Vanilla JS](http://vanilla-js.com/).
