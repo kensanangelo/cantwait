@@ -2,31 +2,34 @@
 // ------------------
 
 /**
- * Generic usage of Array.prototype.forEach that can also be used on NodeList elements.
+ * Executes a function once per element in a container.
+ * Abstracts Array.prototype.forEach for `Array`s and `NodeList`s.
  *
- * @param {(*[]|NodeList)} elements  The elements to be processed
- * @param {}               callback  Function to execute for each element
+ * @param {Array|NodeList} elements The elements to be processed
+ * @param {function}       f        Function to apply to each element
  */
-function forEach(elements, callback) {
-  [].forEach.call(elements, callback);
+function forEach(elements, f) {
+  [].forEach.call(elements, f);
 }
 
 /**
- * Generic usage of Array.prototype.map that can also be used on NodeList elements.
+ * Creates a new array with the results of calling a function on every element in a container.
+ * Abstracts Array.prototype.map for `Array`s and `NodeList`s.
  *
- * @param {(*[]|NodeList)} elements  The elements to be processed
- * @param {}               callback  Function to execute for each element
- * @return *[]                       The mapped array
+ * @param   {Array|NodeList} elements The elements to be processed
+ * @param   {function}       f        Function to apply to each element
+ * @returns {Array}                   The mapped array
  */
-function map(elements, callback) {
-  return [].map.call(elements, callback);
+function map(elements, f) {
+  return [].map.call(elements, f);
 }
 
 /**
- * Checks the presence of a value in an array
+ * Checks the presence of a value in an array.
  *
- * @param   {*[]} array  The array to check
- * @returns {Boolean}    true if the value exists, false otherwise
+ * @param   {Array}   array The array to test against
+ * @param   {*}       value The value to test
+ * @returns {Boolean}       true if the value exists, false otherwise
  */
 function contains(array, value) {
   return array.indexOf(value) !== -1;
@@ -36,9 +39,10 @@ function contains(array, value) {
 // -----------
 
 /**
- * Displays a non-visible HTML element (mutable function)
+ * Displays a non-visible HTML element.
+ * This function has side-effects: it mutates `elements`.
  *
- * @param {(HTMLElement|HTMLElement[]|NodeList)} elements  The HTML element(s) to show
+ * @param {HTMLElement|Array.<HTMLElement>|NodeList} elements The HTML element(s) to show
  */
 function show(elements) {
   if (typeof elements.length === "undefined") {
@@ -51,9 +55,10 @@ function show(elements) {
 }
 
 /**
- * Hides an HTML element (mutable function)
+ * Hides an HTML element.
+ * This function has side-effects: it mutates `elements`.
  *
- * @param {(HTMLElement|HTMLElement[]|NodeList)} elements  The HTML element(s) to hide
+ * @param {HTMLElement|Array.<HTMLElement>|NodeList} elements The HTML element(s) to hide
  */
 function hide(elements) {
   if (typeof elements.length === "undefined") {
@@ -66,7 +71,8 @@ function hide(elements) {
 }
 
 /**
- * Removes all children ofa given HTML element (mutable function)
+ * Removes all children of a given HTML element.
+ * This function has side-effects: it mutates `element`.
  *
  * @param {HTMLElement} element  The element to empty
  */
@@ -77,10 +83,10 @@ function removeAllChildren(element) {
 }
 
 /**
- * Transforms a string-based HTML element into a native HTML element where DOM API applies
+ * Transforms a string-based HTML element into a native HTML element where the DOM API can be used.
  *
- * @param   {String}  str  A string containing an HTML element
- * @returns {HTMLElement}      An HTML element
+ * @param   {String}      str A string containing an HTML element
+ * @returns {HTMLElement}     An HTML element
  */
 function stringToElement(str) {
   var div = document.createElement('div');
@@ -89,10 +95,10 @@ function stringToElement(str) {
 }
 
 /**
- * Build a HTML <ul> list for each string of an array
+ * Builds an HTML `<ul>` list for each string in an array.
  *
- * @param   {String[]} array    The elements to be used
- * @returns {HTMLUListElement}  The built <ul> list
+ * @param   {Array.<String>}   array The elements to be used
+ * @returns {HTMLUListElement}       The constructed `<ul>` list
  */
 function buildList(array) {
   return stringToElement("<ul>" + array.reduce(function (previousValue, currentValue) {
@@ -104,12 +110,12 @@ function buildList(array) {
 // -------------
 
 /**
- * Decimal adjustment of a number.
+ * Computes the decimal adjustment of a number.
  * Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#Example:_Decimal_rounding
  *
- * @param   {(Number|String)} value    The number.
- * @param   {Number}          [exp=0]  The exponent (the 10 logarithm of the adjustment base).
- * @returns {Number}                   The adjusted value.
+ * @param   {Number|String} value   The number
+ * @param   {Number}        [exp=0] The exponent (the 10-log of the adjustment base)
+ * @returns {Number}                The adjusted value
  */
 function round(value, exp) {
   // If the exp is undefined or zero...
@@ -135,53 +141,54 @@ function round(value, exp) {
 }
 
 /**
- * Generate a random identifier, random enough to be considered as unique.
+ * Generates a random identifier, random enough to be considered as unique.
  *
- * @returns {String}  A random string (16 alphanumerical characters)
+ * @returns {String} A random string (8 alphanumerical characters)
  */
 function generateRandomString() {
   return Math.random().toString(36).substr(2, 8);
 }
 
 /**
- * Returns the current date
+ * Returns the current date.
  *
- * @returns {Date}  The current date
+ * @returns {Date} The current date
  */
 function now() {
   return new Date();
 }
 
 /**
- * Sets an interval while calling the function directly, instead of waiting for the end of the interval to call `func` for the first time.
+ * Sets an interval and calls the function directly, instead of waiting for the end of the interval to call it for the first time.
  *
- * @param   {function} func   The function to be called repeatedly
- * @param   {Number}   delay  The number of milliseconds that the `setInterval()` function should wait before each call to func.
- * @returns {Number}          The unique interval ID created by `setInterval()`
+ * @param   {function} f     The function to be called repeatedly
+ * @param   {Number}   delay The number of milliseconds that the `setInterval()` function should wait before each call to f
+ * @returns {Number}         The unique interval ID created by `setInterval()`
  */
-function setIntervalAndCall(func, delay) {
-  func();
-  return window.setInterval(func, delay);
+function setIntervalAndCall(f, delay) {
+  f();
+  return window.setInterval(f, delay);
 }
 
 // TEMPLATING SYSTEM
 // -----------------
 
 /**
- * Returns a template based on his Id
- * @param   {String} templateId  The name that will be used to fetch the template content from the HTML markup
- * @returns {String}             The unrendered template
+ * Returns a template based on his identifier.
+ *
+ * @param   {String} templateId The name that will be used to fetch the template content from the HTML markup
+ * @returns {String}            The unrendered template
  */
 function getTemplate(templateId) {
   return templates[templateId];
 }
 
 /**
- * Renders a set of data inside a template
+ * Renders a set of data inside a template.
  *
- * @param   {String} template  The unrendered template
- * @param   {Object} data      The set of data to be used. Keys must exist with format {{key}} to be used in the template
- * @returns {String}           The template after rendering the data
+ * @param   {String} template The unrendered template
+ * @param   {Object} data     The set of data to be used. Keys must exist with format `{{key}}` to be used in the template
+ * @returns {String}          The template after rendering the data
  */
 function render(template, data) {
   var key;
@@ -196,10 +203,10 @@ function render(template, data) {
 
 /**
  * Transforms a number of seconds into a human-readable (if this human reads English) string.
- * It will show weeks, days, minutes and seconds in a way the the first unit will not be a zero
+ * It will show weeks, days, minutes and seconds in a way the the first unit will not be a zero.
  *
- * @param   {Number} delta  The number of seconds to compute
- * @returns {String}        The human-readable string
+ * @param   {Number} delta The number of seconds to compute
+ * @returns {String}       The human-readable string
  */
 function prettyPrintDelta(delta) {
   var weeks   = Math.floor(delta / 604800),
@@ -218,12 +225,12 @@ function prettyPrintDelta(delta) {
 }
 
 /**
- * Returns an event input along with its label and "Delete event" button (if requested)
+ * Returns an event input along with its label and "Delete event" button (if requested).
  *
- * @param   {String}  value         The input value
- * @param   {Number}  index         The label index
- * @param   {Boolean} showCloseBtn  Shows the "Delete event" button if true, hides it otherwise
- * @returns {HTMLElement}           The entire HTML element containing label, input and delete button
+ * @param   {String}  value        The input value
+ * @param   {Number}  index        The label index
+ * @param   {Boolean} showCloseBtn Shows the "Delete event" button if true, hides it otherwise
+ * @returns {HTMLElement}          The entire HTML element containing label, input and delete button
  */
 function newEventInput(value, index, showCloseBtn) {
   var eventElement = stringToElement(render(getTemplate("input"), {
@@ -248,8 +255,8 @@ function newEventInput(value, index, showCloseBtn) {
  * Creates one event input for each date string given in the array argument.
  * If there is less than 2 strings given, 2 empty inputs are returned.
  *
- * @param   {String[]} strings  The dates to be parsed
- * @returns {HTMLElement[]}     An array of event inputs
+ * @param   {Array.<String>} strings The dates to be parsed
+ * @returns {Array.<HTMLElement>}    An array of event inputs
  */
 function createEventInputs(strings) {
   if (strings.length < 2) {
@@ -263,10 +270,12 @@ function createEventInputs(strings) {
 }
 
 /**
- * Set a progress bar element attributes depending on the given value (mutable function)
+ * Set a progress bar element attributes depending on the given value
+ * This function has side-effects: it mutates `progress`.
  *
- * @param {HTMLElement} progress  The progress bar container to modify
- * @param {Number}      ratio     The value to be applied to the progress bar
+ *
+ * @param {HTMLElement} progress The progress bar container to modify
+ * @param {Number}      ratio    The value to be applied to the progress bar
  */
 function updateProgressBar(progress, ratio) {
   ratio = Math.min(Math.max(0.0, ratio), 1.0);
@@ -290,11 +299,11 @@ function updateProgressBar(progress, ratio) {
 }
 
 /**
- * Builds and returns strings indicating, for each event, the time spent or to be spent to reach a reference time
+ * Builds and returns strings indicating, for each event, the time spent or to be spent to reach a reference time.
  *
- * @param   {Date[]} events     The list of events
- * @param   {Date}   time       The reference time to compare with each event
- * @returns {HTMLUListElement}  The list of computed timers
+ * @param   {Array.<Date>} events The list of events
+ * @param   {Date}         time   The reference time to compare with each event
+ * @returns {HTMLUListElement}    The list of computed timers
  */
 function buildTimerList(events, time) {
   return buildList(map(events, function (event, index) {
@@ -306,10 +315,10 @@ function buildTimerList(events, time) {
 }
 
 /**
- * Creates a collection of Date elements
+ * Creates a collection of Date elements.
  *
- * @param   {String[]} events  The strings to create the Date elements
- * @returns {Object}           The collection of Date elements
+ * @param   {Array.<String>} events The strings to create the Date elements
+ * @returns {Object}                The collection of Date elements
  */
 function makeDateEvents(events) {
   return map(events, function (str) {
@@ -318,13 +327,13 @@ function makeDateEvents(events) {
 }
 
 /**
- * Checks for input errors in a collection of dates
+ * Checks for input errors in a collection of dates.
  * The errors checked are:
  * - The dates are invalid
  * - A given date happens before the previous element from the collection
  *
- * @param   {Date[]} dateEvents  The Date elements to check
- * @returns {Object}             The list of error indices and messages
+ * @param   {Array.<Date>} dateEvents The Date elements to check
+ * @returns {Object}                  The list of error indices and messages
  */
 function checkForErrors(dateEvents) {
   var eventNumbers = [],
@@ -368,10 +377,10 @@ function checkForErrors(dateEvents) {
 }
 
 /**
- * Creates a list of HTML elements, markers for each event, including their relative position
+ * Creates a list of HTML elements, markers for each event, including their relative position.
  *
- * @param   {Date[]} dateEvents  The Date elements, each of them will have a marker
- * @returns {HTMLElement}        The list of markers as HTML elements
+ * @param   {Array.<Date>} dateEvents The Date elements, each of them will have a marker
+ * @returns {HTMLElement}             The list of markers as HTML elements
  */
 function makeEventMarkers(dateEvents) {
   return map(dateEvents, function (dateEvent, index) {
@@ -384,11 +393,12 @@ function makeEventMarkers(dateEvents) {
 
 
 /**
- * Updates the timers given a specific time and a list of events (mutable function)
+ * Updates the timers given a specific time and a list of events.
+ * This function has side-effects: it mutates `timersElement`.
  *
- * @param {HTMLElement} timersElement  The timer container to modify
- * @param {Number}      ratio          The value to be applied to the progress bar
- * @param {Element}     listElement    The list of timers to display
+ * @param {HTMLElement} timersElement The timer container to modify
+ * @param {Number}      ratio         The value to be applied to the progress bar
+ * @param {Element}     listElement   The list of timers to display
  */
 function updateTimers(timersElement, ratio, listElement) {
   removeAllChildren(timersElement);
@@ -407,11 +417,12 @@ function updateTimers(timersElement, ratio, listElement) {
 }
 
 /**
- * Updates the entire output given a specific time and a list of events (mutable function)
+ * Updates the entire output given a specific time and a list of events.
+ * This function has side-effects: it mutates `outputElement`.
  *
- * @param {HTMLElement} outputElement  The timer container to modify
- * @param {Date}        time           The time used to compute the the timers
- * @param {Date[]}      dateEvents     The collection of events
+ * @param {HTMLElement}  outputElement The timer container to modify
+ * @param {Date}         time          The time used to compute the the timers
+ * @param {Array.<Date>} dateEvents    The collection of events
  */
 function updateOutput(outputElement, time, dateEvents) {
   var ratio = round(time - dateEvents[0], -3) / (dateEvents[dateEvents.length - 1] - dateEvents[0]);
@@ -420,11 +431,12 @@ function updateOutput(outputElement, time, dateEvents) {
 }
 
 /**
- * Main function of cantwait (mutable function)
- * Computes and display all outputs for a set of given events
- * Does not take care of events, UI interaction, nor browser history manipulation
+ * Main function of cantwait.
+ * Computes and display all outputs for a set of given events.
+ * Does not take care of events, UI interaction, nor browser history manipulation.
+ * This function has side-effects: it mutates elements from the DOM.
  *
- * @param   {String[]} events  The event strings to run cantwait from
+ * @param   {Array.<String>} events  The event strings to run cantwait from
  */
 function cantwait(events) {
   var errorsElement  = document.querySelector("#errors"),
