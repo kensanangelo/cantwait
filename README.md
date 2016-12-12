@@ -6,11 +6,11 @@ This is a small web application computing time remaining between events, intende
 
 ## Usage
 
-Simply try the demo at <http://cantwait.astori.fr>, or clone the repository and open the index page in your browser.
+Simply try the demo at <https://astorije.github.io/cantwait/>, or clone the repository and open the index page in your browser.
 
 Add timed events in the numbered fields. Click on `Compute` and see the magic happen.
 
-For example, [try these values](http://cantwait.astori.fr/?e=1985-10-26T01%3A20&e=2015-10-21T16%3A29). What's wrong, *chicken*?
+For example, [try these well-known values](https://astorije.github.io/cantwait/?e=1985-10-26T01%3A20&e=2015-10-21T16%3A29).
 
 ## Is that useful?
 
@@ -19,22 +19,22 @@ I used this as an excuse to play with some of the recent JavaScript APIs for the
 
 - History API
 - Date manipulation in JavaScript
-- [Bootstrap 3](http://getbootstrap.com/)
+- [Bootstrap 3](https://getbootstrap.com/)
 - Latest CSS Selectors
 - Functional programming principles applied in JavaScript
 - [JSDoc](http://usejsdoc.org/)
 - Testing in JavaScript
-  - [Mocha](http://mochajs.org/)
+  - [Mocha](https://mochajs.org/)
   - [Chai](http://chaijs.com/) and the BDD assertion style
-  - Automation of client-side testing with [Travis CI](http://docs.travis-ci.com/) and [PhantomJS](http://phantomjs.org/)
+  - Automation of client-side testing with [Travis CI](https://docs.travis-ci.com/) and [PhantomJS](http://phantomjs.org/)
 
-This was also a way to refresh my JavaScript. All of this was done using [Vanilla JS](http://vanilla-js.com/).
+This was also a way to refresh my JavaScript. All of this was done in [Vanilla JS](http://vanilla-js.com/).
 
 ## Tests
 
 ### In the browser
 
-Open `test/index.html` in your browser (or <http://cantwait.astori.fr/test/>) and look at all these tests gracefully pass.
+Open `test/index.html` in your browser (or <https://astorije.github.io/cantwait/test/>) and look at all these tests gracefully pass.
 
 If they don't, please [report a bug](https://github.com/astorije/cantwait/issues).
 
@@ -66,7 +66,7 @@ npm uninstall mocha chai
 
 ## Documentation
 
-The API documentation can be seen when opening `doc/global.html` in your browser, or at <http://cantwait.astori.fr/doc/global.html>.
+The API documentation can be seen when opening `doc/global.html` in your browser, or at <https://astorije.github.io/cantwait/doc/global.html>.
 
 ### Generate the documentation
 
@@ -89,4 +89,4 @@ As far as I know, it looks like this:
 - Internet Explorer is not compatible
 - Safari is not compatible
 
-Because I do not plan to use Internet Explorer or Safari someday soon and, let's face, nobody else will actually use *Can't Wait!*, I will not try to fix this.
+Because I do not plan to use Internet Explorer or Safari anytime soon and, let's face it, nobody else will actually use *Can't Wait!*, I will not try to fix this.
